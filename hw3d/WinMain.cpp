@@ -1,10 +1,31 @@
 #include <Windows.h>
 
+LRESULT CALLBACK WindowProc(
+	_In_ HWND	hWnd,
+	_In_ UINT	uMsg,
+	_In_ WPARAM	wParam,
+	_In_ LPARAM	lParam
+)
+{
+	// custom message processing
+	switch ( uMsg )
+	{
+	case WM_CLOSE:
+		PostQuitMessage( 69 );
+		break;
+	default:
+		break;
+	}
+
+	// default process the rest of the messages
+	return DefWindowProc( hWnd,uMsg,wParam,lParam );
+}
+
 int WINAPI wWinMain(
 	_In_		HINSTANCE	hInstance,
-	_In_opt_	HINSTANCE	hPrevInstance,
-	_In_		PWSTR		pCmdLine,
-	_In_		int			nCmdShow
+	_In_opt_	HINSTANCE	/*hPrevInstance*/,
+	_In_		PWSTR		/*pCmdLine*/,
+	_In_		int			/*nCmdShow*/
 )
 {
 	// register window class
@@ -13,7 +34,7 @@ int WINAPI wWinMain(
 	WNDCLASSEX wc = { 0 };
 	wc.cbSize		 = sizeof( wc );
 	wc.style		 = CS_OWNDC;
-	wc.lpfnWndProc	 = DefWindowProc;
+	wc.lpfnWndProc	 = WindowProc;
 	wc.cbClsExtra	 = 0;
 	wc.cbWndExtra	 = 0;
 	wc.hInstance	 = hInstance;
@@ -38,6 +59,22 @@ int WINAPI wWinMain(
 	// show window
 	ShowWindow( hWnd,SW_SHOW );
 
-	while ( true );
-	return 0;
+	// process messages
+	MSG msg;
+	BOOL gResult;
+	while ( ( gResult = GetMessage( &msg,nullptr,0,0 ) ) > 0 )
+	{
+		TranslateMessage( &msg );
+		DispatchMessage( &msg );
+	}
+
+	// process quit message
+	if ( gResult == -1 )
+	{
+		return -1;
+	}
+	else
+	{
+		return (int)msg.wParam;
+	}
 }
