@@ -168,6 +168,17 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 		PostQuitMessage( 0 );
 		// return without going through the default proc because the window is going to be destroyed in the destructor
 		return 0;
+	/************* KEYBOARD MESSAGES *************/
+	case WM_KEYDOWN:
+		kbd.OnKeyPressed( static_cast<unsigned char>( wParam ) );
+		break;
+	case WM_KEYUP:
+		kbd.OnKeyReleased( static_cast<unsigned char>( wParam ) );
+		break;
+	case WM_CHAR:
+		kbd.OnChar( static_cast<char>( wParam ) );
+		break;
+	/*********** END KEYBOARD MESSAGES ***********/
 	}
 	// invoke default window proc for all of the unhandled messages
 	return DefWindowProc( hWnd_in,msg,wParam,lParam );

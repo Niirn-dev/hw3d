@@ -20,6 +20,10 @@ int WINAPI wWinMain(
 		{
 			TranslateMessage( &msg );
 			DispatchMessage( &msg );
+			if ( wnd.kbd.KeyIsPressed( VK_SPACE ) )
+			{
+				MessageBox( nullptr,"Sup","Supper",MB_OK | MB_ICONASTERISK );
+			}
 		}
 
 		// process quit message

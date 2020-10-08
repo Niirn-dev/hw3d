@@ -2,6 +2,7 @@
 
 #include "WinFlags.h"
 #include "ChiliException.h"
+#include "Keyboard.h"
 
 class Window
 {
@@ -59,6 +60,8 @@ private:
 		_In_ WPARAM	wParam,
 		_In_ LPARAM	lParam
 	) noexcept;
+public:
+	Keyboard kbd;
 private:
 	// int width;
 	// int height;
