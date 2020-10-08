@@ -1,4 +1,5 @@
 #include <Windows.h>
+#include <string>
 
 LRESULT CALLBACK WindowProc(
 	_In_ HWND	hWnd,
@@ -12,6 +13,12 @@ LRESULT CALLBACK WindowProc(
 	{
 	case WM_CLOSE:
 		PostQuitMessage( 69 );
+		break;
+	case WM_KEYDOWN:
+		SetWindowText( hWnd,"Respect" );
+		break;
+	case WM_KEYUP:
+		SetWindowText( hWnd,"Pubes" );
 		break;
 	default:
 		break;
