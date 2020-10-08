@@ -171,7 +171,10 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 	/************* KEYBOARD MESSAGES *************/
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
-		kbd.OnKeyPressed( static_cast<unsigned char>( wParam ) );
+		if ( !( lParam & 0x40000000 ) || kbd.AutorepeatIsEnabled() )
+		{
+			kbd.OnKeyPressed( static_cast<unsigned char>( wParam ) );
+		}
 		break;
 	case WM_SYSKEYUP:
 	case WM_KEYUP:
