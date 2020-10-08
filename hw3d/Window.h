@@ -1,9 +1,23 @@
 #pragma once
 
 #include "WinFlags.h"
+#include "ChiliException.h"
 
 class Window
 {
+public:
+	class Exception : public ChiliException
+	{
+	public:
+		Exception( int line,const char* file,HRESULT hr );
+		const char* what() const noexcept override;
+		const char* GetType() const noexcept override;
+		static std::string TranslateErrorCode( HRESULT hr ) noexcept;
+		HRESULT GetErrorCode() const noexcept;
+		std::string GetErrorString() const noexcept;
+	private:
+		HRESULT hr;
+	};
 private:
 	class WindowClass
 	{
