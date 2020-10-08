@@ -1,6 +1,10 @@
 #include "Window.h"
 #include <sstream>
 
+// macros for easier exception throwing
+#define CHWND_EXCEPT( hr ) Window::Exception( __LINE__,__FILE__,hr )
+#define CHWND_LAST_EXCEPT() Window::Exception( __LINE__,__FILE__,GetLastError() )
+
 // create wndClass instance
 Window::WindowClass Window::WindowClass::wndClass;
 
@@ -93,7 +97,7 @@ Window::WindowClass::~WindowClass()
     UnregisterClass( GetName(),GetInstance() );
 }
 
-Window::Window( int width,int height,const char* name ) noexcept
+Window::Window( int width,int height,const char* name )
 {
 	// calculate window size based on the desired client region size
 	RECT wr;
@@ -101,7 +105,10 @@ Window::Window( int width,int height,const char* name ) noexcept
 	wr.right = wr.left + width;
 	wr.top = 100;
 	wr.bottom = wr.top + height;
-	AdjustWindowRect( &wr,WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,FALSE );
+	if ( AdjustWindowRect( &wr,WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,FALSE ) == 0 )
+	{
+		throw CHWND_LAST_EXCEPT();
+	}
 	// create window and get hWnd
 	hWnd = CreateWindowEx(
 		0,
@@ -111,6 +118,10 @@ Window::Window( int width,int height,const char* name ) noexcept
 		CW_USEDEFAULT,CW_USEDEFAULT,wr.right - wr.left,wr.bottom - wr.top,
 		nullptr,nullptr,WindowClass::GetInstance(),this
 	);
+	if ( hWnd == nullptr )
+	{
+		throw CHWND_LAST_EXCEPT();
+	}
 	// show window
 	ShowWindow( hWnd,SW_SHOWDEFAULT );
 }

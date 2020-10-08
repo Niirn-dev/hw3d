@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "ChiliException.h"
 
 int WINAPI wWinMain(
 	_In_		HINSTANCE	/*hInstance*/,
@@ -7,25 +8,42 @@ int WINAPI wWinMain(
 	_In_		int			/*nCmdShow*/
 )
 {
-	// create a window
-	Window wnd{ 800,600,"HW3D Window" };
+	try
+	{
+		// create a window
+		Window wnd{ 800,600,"HW3D Window" };
 
-	// process messages
-	MSG msg;
-	BOOL gResult;
-	while ( ( gResult = GetMessage( &msg,nullptr,0,0 ) ) > 0 )
+		// process messages
+		MSG msg;
+		BOOL gResult;
+		while ( ( gResult = GetMessage( &msg,nullptr,0,0 ) ) > 0 )
+		{
+			TranslateMessage( &msg );
+			DispatchMessage( &msg );
+		}
+
+		// process quit message
+		if ( gResult == -1 )
+		{
+			return -1;
+		}
+		else
+		{
+			return (int)msg.wParam;
+		}
+	}
+	catch ( const ChiliException& e )
 	{
-		TranslateMessage( &msg );
-		DispatchMessage( &msg );
+		MessageBox( nullptr,e.what(),e.GetType(),MB_OK | MB_ICONEXCLAMATION );
+	}
+	catch ( const std::exception& e )
+	{
+		MessageBox( nullptr,e.what(),"Standard exception",MB_OK | MB_ICONEXCLAMATION );
+	}
+	catch ( ... )
+	{
+		MessageBox( nullptr,"No details available","Unknown exception",MB_OK | MB_ICONEXCLAMATION );
 	}
 
-	// process quit message
-	if ( gResult == -1 )
-	{
-		return -1;
-	}
-	else
-	{
-		return (int)msg.wParam;
-	}
+	return -1;
 }
