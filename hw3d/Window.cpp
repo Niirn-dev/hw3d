@@ -178,6 +178,10 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 	case WM_CHAR:
 		kbd.OnChar( static_cast<char>( wParam ) );
 		break;
+
+	case WM_KILLFOCUS:
+		kbd.ClearState();
+		break;
 	/*********** END KEYBOARD MESSAGES ***********/
 	}
 	// invoke default window proc for all of the unhandled messages
