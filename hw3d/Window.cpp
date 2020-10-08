@@ -169,9 +169,11 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 		// return without going through the default proc because the window is going to be destroyed in the destructor
 		return 0;
 	/************* KEYBOARD MESSAGES *************/
+	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
 		kbd.OnKeyPressed( static_cast<unsigned char>( wParam ) );
 		break;
+	case WM_SYSKEYUP:
 	case WM_KEYUP:
 		kbd.OnKeyReleased( static_cast<unsigned char>( wParam ) );
 		break;
