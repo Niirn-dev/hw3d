@@ -42,6 +42,7 @@ public:
 	~Window();
 	Window( const Window& ) = delete;
 	Window& operator=( const Window& ) = delete;
+	void SetTitle( const std::string& title ) const;
 private:
 	static LRESULT CALLBACK HangleMsgSetup(
 		_In_ HWND	hWnd,

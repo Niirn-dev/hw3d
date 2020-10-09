@@ -132,6 +132,14 @@ Window::~Window()
 	DestroyWindow( hWnd );
 }
 
+void Window::SetTitle( const std::string& title ) const
+{
+	if ( SetWindowText( hWnd,title.c_str() ) == 0 )
+	{
+		throw CHWND_LAST_EXCEPT();
+	}
+}
+
 LRESULT Window::HangleMsgSetup( _In_ HWND hWnd,_In_ UINT msg,_In_ WPARAM wParam,_In_ LPARAM lParam ) noexcept
 {
 	// if window is created
