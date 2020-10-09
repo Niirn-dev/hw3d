@@ -1,6 +1,4 @@
-#include "Window.h"
-#include "ChiliException.h"
-#include <sstream>
+#include "App.h"
 
 int WINAPI wWinMain(
 	_In_		HINSTANCE	/*hInstance*/,
@@ -11,27 +9,7 @@ int WINAPI wWinMain(
 {
 	try
 	{
-		// create a window
-		Window wnd{ 800,600,"HW3D Window" };
-
-		// process messages
-		MSG msg;
-		BOOL gResult;
-		while ( ( gResult = GetMessage( &msg,nullptr,0,0 ) ) > 0 )
-		{
-			TranslateMessage( &msg );
-			DispatchMessage( &msg );
-		}
-
-		// process quit message
-		if ( gResult == -1 )
-		{
-			return -1;
-		}
-		else
-		{
-			return (int)msg.wParam;
-		}
+		return App{}.Go();
 	}
 	catch ( const ChiliException& e )
 	{

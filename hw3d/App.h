@@ -1,0 +1,25 @@
+#pragma once
+
+#include "Window.h"
+#include <optional>
+#include <string>
+
+class App
+{
+public:
+	App( std::optional<int> wndWidth = std::nullopt,
+		 std::optional<int> wndHeight = std::nullopt,
+		 std::optional<std::string> wndName = std::nullopt );
+	App( const App& ) = delete;
+	App& operator=( const App& ) = delete;
+
+	int Go();
+private:
+	void DoFrame();
+private:
+	static constexpr int wndWidthDefault = 800;
+	static constexpr int wndHeightDefault = 600;
+
+	Window wnd;
+};
+
