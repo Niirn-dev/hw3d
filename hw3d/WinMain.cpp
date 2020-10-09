@@ -21,33 +21,6 @@ int WINAPI wWinMain(
 		{
 			TranslateMessage( &msg );
 			DispatchMessage( &msg );
-
-			if ( !wnd.mouse.IsEmpty() )
-			{
-				static int count = 0;
-				const auto e = wnd.mouse.Read();
-				switch ( e->GetType() )
-				{
-				case Mouse::Event::Type::WheelUp:
-				{
-					++count;
-					std::stringstream oss;
-					oss << "Up:\t" << count;
-					wnd.SetTitle( oss.str() );
-				}
-					break;
-				case Mouse::Event::Type::WheelDown:
-				{
-					--count;
-					std::stringstream oss;
-					oss << "Down:\t" << count;
-					wnd.SetTitle( oss.str() );
-				}
-				break;
-				default:
-					break;
-				}
-			}
 		}
 
 		// process quit message
