@@ -61,6 +61,7 @@ private:
 	void OnRightRelease( int x_in,int y_in ) noexcept;
 	void OnWheelUp( int x_in,int y_in ) noexcept;
 	void OnWheelDown( int x_in,int y_in ) noexcept;
+	void OnWheelDelta( int x_in,int y_in,int delta ) noexcept;
 	void OnMouseMove( int x_in,int y_in ) noexcept;
 	void OnMouseEnter() noexcept;
 	void OnMouseLeave() noexcept;
@@ -71,6 +72,7 @@ private:
 	bool isInWindow = false;
 	int x = 0;
 	int y = 0;
+	int wheelDelta = 0;
 	static constexpr unsigned int bufferSize = 16u;
 	std::queue<Event> buffer;
 };

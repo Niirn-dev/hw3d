@@ -230,14 +230,7 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 	{
 		const auto p = MAKEPOINTS( lParam );
 		const auto delta = GET_WHEEL_DELTA_WPARAM( wParam );
-		if ( delta > 0 )
-		{
-			mouse.OnWheelUp( p.x,p.y );
-		}
-		else if ( delta < 0 )
-		{
-			mouse.OnWheelDown( p.x,p.y );
-		}
+		mouse.OnWheelDelta( p.x,p.y,delta );
 	}
 		break;
 	case WM_MOUSEMOVE:

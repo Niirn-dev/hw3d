@@ -1,4 +1,5 @@
 #include "Mouse.h"
+#include "WinFlags.h"
 
 Mouse::Event::Event( Type type,const Mouse& parent ) noexcept
     :
@@ -140,6 +141,21 @@ void Mouse::OnWheelDown( int x_in,int y_in ) noexcept
     y = y_in;
     buffer.push( Event{ Event::Type::WheelDown,*this } );
     TrimBuffer();
+}
+
+void Mouse::OnWheelDelta( int x_in,int y_in,int delta ) noexcept
+{
+    wheelDelta += delta;
+    while ( wheelDelta >= WHEEL_DELTA )
+    {
+        wheelDelta -= WHEEL_DELTA;
+        OnWheelUp( x_in,y_in );
+    }
+    while ( wheelDelta <= -WHEEL_DELTA )
+    {
+        wheelDelta += WHEEL_DELTA;
+        OnWheelDown( x_in,y_in );
+    }
 }
 
 void Mouse::OnMouseMove( int x_in,int y_in ) noexcept
