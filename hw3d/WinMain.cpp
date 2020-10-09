@@ -1,5 +1,6 @@
 #include "Window.h"
 #include "ChiliException.h"
+#include <sstream>
 
 int WINAPI wWinMain(
 	_In_		HINSTANCE	/*hInstance*/,
@@ -20,9 +21,23 @@ int WINAPI wWinMain(
 		{
 			TranslateMessage( &msg );
 			DispatchMessage( &msg );
-			if ( wnd.kbd.KeyIsPressed( VK_MENU ) )
+
+			if ( !wnd.mouse.IsEmpty() )
 			{
-				MessageBox( nullptr,"Sup","Supper",MB_OK | MB_ICONASTERISK );
+				const auto e = wnd.mouse.Read();
+				switch ( e->GetType() )
+				{
+				case Mouse::Event::Type::Move:
+				{
+					const auto [x,y] = e->GetPos();
+					std::stringstream oss;
+					oss << "x: " << x << ", y: " << y;
+					wnd.SetTitle( oss.str() );
+				}
+					break;
+				default:
+					break;
+				}
 			}
 		}
 
