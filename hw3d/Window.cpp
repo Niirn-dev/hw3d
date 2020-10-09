@@ -190,6 +190,52 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 		kbd.ClearState();
 		break;
 	/*********** END KEYBOARD MESSAGES ***********/
+	/************** MOUSE MESSAGES ***************/
+	case WM_LBUTTONDOWN:
+	{
+		const auto p = MAKEPOINTS( lParam );
+		mouse.OnLeftPress( p.x,p.y );
+	}
+		break;
+	case WM_LBUTTONUP:
+	{
+		const auto p = MAKEPOINTS( lParam );
+		mouse.OnLeftRelease( p.x,p.y );
+	}
+		break;
+	case WM_RBUTTONDOWN:
+	{
+		const auto p = MAKEPOINTS( lParam );
+		mouse.OnRightPress( p.x,p.y );
+	}
+		break;
+	case WM_RBUTTONUP:
+	{
+		const auto p = MAKEPOINTS( lParam );
+		mouse.OnRightRelease( p.x,p.y );
+	}
+		break;
+	case WM_MOUSEWHEEL:
+	{
+		const auto p = MAKEPOINTS( lParam );
+		const auto delta = GET_WHEEL_DELTA_WPARAM( wParam );
+		if ( delta > 0 )
+		{
+			mouse.OnWheelUp( p.x,p.y );
+		}
+		else if ( delta < 0 )
+		{
+			mouse.OnWheelDown( p.x,p.y );
+		}
+	}
+		break;
+	case WM_MOUSEMOVE:
+	{
+		const auto p = MAKEPOINTS( lParam );
+		mouse.OnMove( p.x,p.y );
+	}
+		break;
+	/************ END MOUSE MESSAGES *************/
 	}
 	// invoke default window proc for all of the unhandled messages
 	return DefWindowProc( hWnd_in,msg,wParam,lParam );

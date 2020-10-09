@@ -3,6 +3,7 @@
 #include "WinFlags.h"
 #include "ChiliException.h"
 #include "Keyboard.h"
+#include "Mouse.h"
 
 class Window
 {
@@ -62,6 +63,7 @@ private:
 	) noexcept;
 public:
 	Keyboard kbd;
+	Mouse mouse;
 private:
 	// int width;
 	// int height;
