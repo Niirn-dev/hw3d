@@ -19,10 +19,12 @@ public:
 			RRelease,
 			WheelUp,
 			WheelDown,
-			Move
+			Move,
+			Enter,
+			Leave
 		};
 	public:
-		Event( Type type,int x,int y ) noexcept;
+		Event( Type type,const Mouse& parent ) noexcept;
 		bool LeftIsPressed() const noexcept;
 		bool RightIsPressed() const noexcept;
 		std::pair<int,int> GetPos() const noexcept;
@@ -33,6 +35,8 @@ public:
 		Type type;
 		int x;
 		int y;
+		bool leftIsPressed;
+		bool rightIsPressed;
 	};
 public:
 	Mouse() = default;
@@ -45,6 +49,7 @@ public:
 	std::pair<int,int> GetPos() const noexcept;
 	int GetX() const noexcept;
 	int GetY() const noexcept;
+	bool IsInWindow() const noexcept;
 	 // event stuff
 	std::optional<Event> Read() noexcept;
 	void Flush() noexcept;
@@ -56,11 +61,14 @@ private:
 	void OnRightRelease( int x_in,int y_in ) noexcept;
 	void OnWheelUp( int x_in,int y_in ) noexcept;
 	void OnWheelDown( int x_in,int y_in ) noexcept;
-	void OnMove( int x_in,int y_in ) noexcept;
+	void OnMouseMove( int x_in,int y_in ) noexcept;
+	void OnMouseEnter() noexcept;
+	void OnMouseLeave() noexcept;
 	void TrimBuffer() noexcept;
 private:
 	bool leftIsPressed = false;
 	bool rightIsPressed = false;
+	bool isInWindow = false;
 	int x = 0;
 	int y = 0;
 	static constexpr unsigned int bufferSize = 16u;

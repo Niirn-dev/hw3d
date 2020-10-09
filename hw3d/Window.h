@@ -66,8 +66,8 @@ public:
 	Keyboard kbd;
 	Mouse mouse;
 private:
-	// int width;
-	// int height;
+	int width;
+	int height;
 	HWND hWnd = nullptr;
 };
 

@@ -99,6 +99,9 @@ Window::WindowClass::~WindowClass()
 }
 
 Window::Window( int width,int height,const char* name )
+	:
+	width( width ),
+	height( height )
 {
 	// calculate window size based on the desired client region size
 	RECT wr;
@@ -240,7 +243,28 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 	case WM_MOUSEMOVE:
 	{
 		const auto p = MAKEPOINTS( lParam );
-		mouse.OnMove( p.x,p.y );
+		// in client region -> log move and log capture/mouse enter if wasn't in the window before
+		if ( p.x >= 0 && p.x < width && p.y >= 0 && p.y < height )
+		{
+			mouse.OnMouseMove( p.x,p.y );
+			if ( !mouse.IsInWindow() )
+			{
+				SetCapture( hWnd );
+				mouse.OnMouseEnter();
+			}
+		}
+		else // outside of the client region -> log and capture the mouse for as long as the LMB or RMB are pressed
+		{
+			if ( wParam & ( MK_LBUTTON | MK_RBUTTON ) )
+			{
+				mouse.OnMouseMove( p.x,p.y );
+			}
+			else
+			{
+				ReleaseCapture();
+				mouse.OnMouseLeave();
+			}
+		}
 	}
 		break;
 	/************ END MOUSE MESSAGES *************/

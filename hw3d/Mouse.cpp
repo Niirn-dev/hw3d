@@ -1,20 +1,22 @@
 #include "Mouse.h"
 
-Mouse::Event::Event( Type type,int x,int y ) noexcept
+Mouse::Event::Event( Type type,const Mouse& parent ) noexcept
     :
     type( type ),
-    x( x ),
-    y( y )
+    x( parent.x ),
+    y( parent.y ),
+    leftIsPressed( parent.leftIsPressed ),
+    rightIsPressed( parent.rightIsPressed )
 {}
 
 bool Mouse::Event::LeftIsPressed() const noexcept
 {
-    return type == Event::Type::LPress;
+    return leftIsPressed;
 }
 
 bool Mouse::Event::RightIsPressed() const noexcept
 {
-    return type == Event::Type::RPress;
+    return rightIsPressed;
 }
 
 std::pair<int,int> Mouse::Event::GetPos() const noexcept
@@ -62,6 +64,11 @@ int Mouse::GetY() const noexcept
     return y;
 }
 
+bool Mouse::IsInWindow() const noexcept
+{
+    return isInWindow;
+}
+
 std::optional<Mouse::Event> Mouse::Read() noexcept
 {
     if ( !IsEmpty() )
@@ -88,7 +95,7 @@ void Mouse::OnLeftPress( int x_in,int y_in ) noexcept
     leftIsPressed = true;
     x = x_in;
     y = y_in;
-    buffer.push( Event{ Event::Type::LPress,x_in,y_in } );
+    buffer.push( Event{ Event::Type::LPress,*this } );
     TrimBuffer();
 }
 
@@ -97,7 +104,7 @@ void Mouse::OnLeftRelease( int x_in,int y_in ) noexcept
     leftIsPressed = false;
     x = x_in;
     y = y_in;
-    buffer.push( Event{ Event::Type::LRelease,x_in,y_in } );
+    buffer.push( Event{ Event::Type::LRelease,*this } );
     TrimBuffer();
 }
 
@@ -106,7 +113,7 @@ void Mouse::OnRightPress( int x_in,int y_in ) noexcept
     rightIsPressed = true;
     x = x_in;
     y = y_in;
-    buffer.push( Event{ Event::Type::RPress,x_in,y_in } );
+    buffer.push( Event{ Event::Type::RPress,*this } );
     TrimBuffer();
 }
 
@@ -115,7 +122,7 @@ void Mouse::OnRightRelease( int x_in,int y_in ) noexcept
     rightIsPressed = false;
     x = x_in;
     y = y_in;
-    buffer.push( Event{ Event::Type::RRelease,x_in,y_in } );
+    buffer.push( Event{ Event::Type::RRelease,*this } );
     TrimBuffer();
 }
 
@@ -123,7 +130,7 @@ void Mouse::OnWheelUp( int x_in,int y_in ) noexcept
 {
     x = x_in;
     y = y_in;
-    buffer.push( Event{ Event::Type::WheelUp,x_in,y_in } );
+    buffer.push( Event{ Event::Type::WheelUp,*this } );
     TrimBuffer();
 }
 
@@ -131,15 +138,29 @@ void Mouse::OnWheelDown( int x_in,int y_in ) noexcept
 {
     x = x_in;
     y = y_in;
-    buffer.push( Event{ Event::Type::WheelDown,x_in,y_in } );
+    buffer.push( Event{ Event::Type::WheelDown,*this } );
     TrimBuffer();
 }
 
-void Mouse::OnMove( int x_in,int y_in ) noexcept
+void Mouse::OnMouseMove( int x_in,int y_in ) noexcept
 {
     x = x_in;
     y = y_in;
-    buffer.push( Event{ Event::Type::Move,x_in,y_in } );
+    buffer.push( Event{ Event::Type::Move,*this } );
+    TrimBuffer();
+}
+
+void Mouse::OnMouseEnter() noexcept
+{
+    isInWindow = true;
+    buffer.push( Event{ Event::Type::Enter,*this } );
+    TrimBuffer();
+}
+
+void Mouse::OnMouseLeave() noexcept
+{
+    isInWindow = false;
+    buffer.push( Event{ Event::Type::Leave,*this } );
     TrimBuffer();
 }
 

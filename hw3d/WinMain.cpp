@@ -39,6 +39,10 @@ int WINAPI wWinMain(
 					break;
 				}
 			}
+			if ( !wnd.mouse.IsInWindow() )
+			{
+				wnd.SetTitle( "Gone!" );
+			}
 		}
 
 		// process quit message
