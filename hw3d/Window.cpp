@@ -151,7 +151,7 @@ std::optional<int> Window::ProcessMessages() noexcept
 		// test for quit message
 		if ( msg.message == WM_QUIT )
 		{
-			return msg.wParam;
+			return static_cast<int>( msg.wParam );
 		}
 		TranslateMessage( &msg );
 		DispatchMessage( &msg );
