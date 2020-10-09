@@ -9,25 +9,13 @@ App::App( std::optional<int> wndWidth,std::optional<int> wndHeight,std::optional
 
 int App::Go()
 {
-	// process messages
-	MSG msg;
-	BOOL gResult;
-	while ( ( gResult = GetMessage( &msg,nullptr,0,0 ) ) > 0 )
+	while ( true )
 	{
-		TranslateMessage( &msg );
-		DispatchMessage( &msg );
-
+		if ( const auto ecode = Window::ProcessMessages() )
+		{
+			return *ecode;
+		}
 		DoFrame();
-	}
-
-	// process quit message
-	if ( gResult == -1 )
-	{
-		return -1;
-	}
-	else
-	{
-		return (int)msg.wParam;
 	}
 }
 

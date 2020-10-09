@@ -143,6 +143,22 @@ void Window::SetTitle( const std::string& title ) const
 	}
 }
 
+std::optional<int> Window::ProcessMessages() noexcept
+{
+	MSG msg;
+	if ( PeekMessage( &msg,nullptr,0,0,PM_REMOVE ) )
+	{
+		// test for quit message
+		if ( msg.message == WM_QUIT )
+		{
+			return msg.wParam;
+		}
+		TranslateMessage( &msg );
+		DispatchMessage( &msg );
+	}
+	return std::nullopt;
+}
+
 LRESULT Window::HangleMsgSetup( _In_ HWND hWnd,_In_ UINT msg,_In_ WPARAM wParam,_In_ LPARAM lParam ) noexcept
 {
 	// if window is created

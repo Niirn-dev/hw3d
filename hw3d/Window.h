@@ -4,6 +4,7 @@
 #include "ChiliException.h"
 #include "Keyboard.h"
 #include "Mouse.h"
+#include <optional>
 
 class Window
 {
@@ -43,6 +44,7 @@ public:
 	Window( const Window& ) = delete;
 	Window& operator=( const Window& ) = delete;
 	void SetTitle( const std::string& title ) const;
+	static std::optional<int> ProcessMessages() noexcept;
 private:
 	static LRESULT CALLBACK HangleMsgSetup(
 		_In_ HWND	hWnd,
