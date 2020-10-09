@@ -208,22 +208,34 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 		mouse.OnLeftPress( p.x,p.y );
 	}
 		break;
-	case WM_LBUTTONUP:
-	{
-		const auto p = MAKEPOINTS( lParam );
-		mouse.OnLeftRelease( p.x,p.y );
-	}
-		break;
 	case WM_RBUTTONDOWN:
 	{
 		const auto p = MAKEPOINTS( lParam );
 		mouse.OnRightPress( p.x,p.y );
+	}
+	break;
+	case WM_LBUTTONUP:
+	{
+		const auto p = MAKEPOINTS( lParam );
+		mouse.OnLeftRelease( p.x,p.y );
+		// release mouse capture if not in the client region
+		if ( !IsInClientRegion( p.x,p.y ) )
+		{
+			ReleaseCapture();
+			mouse.OnMouseLeave();
+		}
 	}
 		break;
 	case WM_RBUTTONUP:
 	{
 		const auto p = MAKEPOINTS( lParam );
 		mouse.OnRightRelease( p.x,p.y );
+		// release mouse capture if not in the client region
+		if ( !IsInClientRegion( p.x,p.y ) )
+		{
+			ReleaseCapture();
+			mouse.OnMouseLeave();
+		}
 	}
 		break;
 	case WM_MOUSEWHEEL:
@@ -237,7 +249,7 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 	{
 		const auto p = MAKEPOINTS( lParam );
 		// in client region -> log move and log capture/mouse enter if wasn't in the window before
-		if ( p.x >= 0 && p.x < width && p.y >= 0 && p.y < height )
+		if ( IsInClientRegion( p.x,p.y ) )
 		{
 			mouse.OnMouseMove( p.x,p.y );
 			if ( !mouse.IsInWindow() )
@@ -264,4 +276,9 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 	}
 	// invoke default window proc for all of the unhandled messages
 	return DefWindowProc( hWnd_in,msg,wParam,lParam );
+}
+
+bool Window::IsInClientRegion( int x,int y )
+{
+	return x >= 0 && x < width && y >= 0 && y < height;
 }

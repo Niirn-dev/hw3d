@@ -69,5 +69,7 @@ private:
 	int width;
 	int height;
 	HWND hWnd = nullptr;
+private:
+	bool IsInClientRegion( int x,int y );
 };
 
