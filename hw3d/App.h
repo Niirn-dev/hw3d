@@ -3,7 +3,6 @@
 #include "Window.h"
 #include <optional>
 #include <string>
-#include "ChiliTimer.h"
 
 class App
 {
@@ -22,6 +21,5 @@ private:
 	static constexpr int wndHeightDefault = 600;
 
 	Window wnd;
-	ChiliTimer timer;
 };
 
