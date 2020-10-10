@@ -4,8 +4,18 @@
 
 #pragma comment( lib,"d3d11.lib" )
 
-#define GFX_THROW_FAILED(hrcall) if( HRESULT _hr; FAILED( _hr = (hrcall) ) ) throw Graphics::HrException( __LINE__,__FILE__,_hr )
+#define GFX_EXEPT_NOINFO(hr) Graphics::HrException( __LINE__,__FILE__,(hr) )
+#define GFX_THROW_NOINFO(hrcall) if( HRESULT _hr; FAILED( _hr = (hrcall) ) ) throw Graphics::HrException( __LINE__,__FILE__,_hr )
+
+#ifndef NDEBUG
+#define GFX_EXCEPT(hr) Graphics::HrException( __LINE__,__FILE__,(hr),infoManager.GetMessages() )
+#define GFX_THROW_INFO(hrcall) infoManager.Set(); if ( HRESULT _hr; FAILED( _hr = (hrcall) ) ) throw GFX_EXCEPT( _hr )
+#define GFX_DEVICE_REMOVED_EXCEPT(hr) Graphics::DeviceRemovedException( __LINE__,__FILE__,(hr),infoManager.GetMessages() )
+#else
+#define GFX_EXCEPT(hr) Graphics::HrException( __LINE__,__FILE__,(hr) )
+#define GFX_THROW_INFO(hrcall) GFX_THROW_NOINFO( (hrcall) )
 #define GFX_DEVICE_REMOVED_EXCEPT(hr) Graphics::DeviceRemovedException( __LINE__,__FILE__,(hr) )
+#endif // !NDEBUG
 
 Graphics::Graphics( HWND hWnd )
 {
@@ -23,15 +33,21 @@ Graphics::Graphics( HWND hWnd )
 	sd.OutputWindow = hWnd;
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
+	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sd.Windowed = TRUE;
 	sd.Flags = 0;
 
+	UINT swapCreateFlags = 0u;
+#ifndef NDEBUG
+	swapCreateFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif // !NDEBUG
+
 	// create device, swap chain and device context handles
-	GFX_THROW_FAILED( D3D11CreateDeviceAndSwapChain(
+	GFX_THROW_INFO( D3D11CreateDeviceAndSwapChain(
 		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,
 		nullptr,
-		0,
+		swapCreateFlags,
 		nullptr,
 		0,
 		D3D11_SDK_VERSION,
@@ -44,8 +60,8 @@ Graphics::Graphics( HWND hWnd )
 
 	// gain access to texture subresource in swap chain (back buffer)
 	ID3D11Resource* pBackBuffer = nullptr;
-	GFX_THROW_FAILED( pSwap->GetBuffer( 0,__uuidof(ID3D11Resource),reinterpret_cast<void**>( &pBackBuffer ) ) );
-	GFX_THROW_FAILED( pDevice->CreateRenderTargetView( pBackBuffer,nullptr,&pTarget ) );
+	GFX_THROW_INFO( pSwap->GetBuffer( 0,__uuidof(ID3D11Resource),reinterpret_cast<void**>( &pBackBuffer ) ) );
+	GFX_THROW_INFO( pDevice->CreateRenderTargetView( pBackBuffer,nullptr,&pTarget ) );
 	pBackBuffer->Release();
 }
 
@@ -71,6 +87,10 @@ Graphics::~Graphics()
 
 void Graphics::EndFrame()
 {
+#ifndef NDEBUG
+	infoManager.Set();
+#endif // !NDEBUG
+
 	if ( HRESULT hr; FAILED( hr = pSwap->Present( 1u,0u ) ) )
 	{
 		if ( hr == DXGI_ERROR_DEVICE_REMOVED )
@@ -79,7 +99,7 @@ void Graphics::EndFrame()
 		}
 		else
 		{
-			GFX_THROW_FAILED( hr );
+			throw GFX_EXCEPT( hr );
 		}
 	}
 }
@@ -94,11 +114,23 @@ void Graphics::ClearBuffer( float r,float g,float b ) noexcept
 }
 
 /*********** EXCEPTION DIFINITIONS ***********/
-Graphics::HrException::HrException( int line,const char* file,HRESULT hr ) noexcept
+Graphics::HrException::HrException( int line,const char* file,HRESULT hr,std::vector<std::string> infoMsgs ) noexcept
 	:
 	Exception( line,file ),
 	hr( hr )
-{}
+{
+	std::stringstream oss = {};
+	for ( const auto& msg : infoMsgs )
+	{
+		oss << msg << std::endl;
+	}
+	info = oss.str();
+	// remove last endl if info isn't empty
+	if ( !info.empty() )
+	{
+		info.pop_back();
+	}
+}
 
 const char* Graphics::HrException::what() const noexcept
 {
@@ -109,6 +141,10 @@ const char* Graphics::HrException::what() const noexcept
 		<< "[Error String] " << GetErrorString() << std::endl
 		<< "[Description] " << GetErrorDescription() << std::endl
 		<< GetOriginString();
+	if ( !info.empty() )
+	{
+		oss << "\n[Error info]\n" << GetErrorInfo() << std::endl;
+	}
 	whatBuffer = oss.str();
 	return whatBuffer.c_str();
 }
@@ -133,6 +169,11 @@ std::string Graphics::HrException::GetErrorDescription() const noexcept
 	char buf[512];
 	DXGetErrorDescription( hr,buf,sizeof( buf ) );
 	return buf;
+}
+
+std::string Graphics::HrException::GetErrorInfo() const noexcept
+{
+	return info;
 }
 
 
