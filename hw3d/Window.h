@@ -13,15 +13,26 @@ class Window
 public:
 	class Exception : public ChiliException
 	{
+		using ChiliException::ChiliException;
 	public:
-		Exception( int line,const char* file,HRESULT hr );
+		static std::string TranslateErrorCode( HRESULT hr ) noexcept;
+	};
+	class HrException : public Exception
+	{
+	public:
+		HrException( int line,const char* file,HRESULT hr ) noexcept;
 		const char* what() const noexcept override;
 		const char* GetType() const noexcept override;
-		static std::string TranslateErrorCode( HRESULT hr ) noexcept;
 		HRESULT GetErrorCode() const noexcept;
-		std::string GetErrorString() const noexcept;
+		std::string GetErrorDescription() const noexcept;
 	private:
 		HRESULT hr;
+	};
+	class NoGfxException : public Exception
+	{
+		using Exception::Exception;
+	public:
+		const char* GetType() const noexcept override;
 	};
 private:
 	class WindowClass

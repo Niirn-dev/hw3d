@@ -3,65 +3,12 @@
 #include <sstream>
 
 // macros for easier exception throwing
-#define CHWND_EXCEPT( hr ) Window::Exception( __LINE__,__FILE__,hr )
-#define CHWND_LAST_EXCEPT() Window::Exception( __LINE__,__FILE__,GetLastError() )
+#define CHWND_EXCEPT( hr ) Window::HrException( __LINE__,__FILE__,(hr) )
+#define CHWND_LAST_EXCEPT() Window::HrException( __LINE__,__FILE__,GetLastError() )
+#define CHWND_NOGFX_EXCEPT() Window::NoGfxException( __LINE__,__FILE__ )
 
 // create wndClass instance
 Window::WindowClass Window::WindowClass::wndClass;
-
-// window exception stuff
-Window::Exception::Exception( int line,const char* file,HRESULT hr )
-	:
-	ChiliException( line,file ),
-	hr( hr )
-{}
-
-const char* Window::Exception::what() const noexcept
-{	
-	std::stringstream oss;
-	oss << GetType() << std::endl
-		<< "[Error Code] " << GetErrorCode() << std::endl
-		<< "[Description] " << GetErrorString() << std::endl
-		<< GetOriginString();
-	whatBuffer = oss.str();
-	return whatBuffer.c_str();
-}
-
-const char* Window::Exception::GetType() const noexcept
-{	
-	return "Chili Window Exception";
-}
-
-std::string Window::Exception::TranslateErrorCode( HRESULT hr ) noexcept
-{	
-	char* pMsgBuff = nullptr;
-	DWORD nMsgLen = FormatMessage( 
-		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		nullptr,
-		hr,
-		MAKELANGID( LANG_NEUTRAL,SUBLANG_DEFAULT ),
-		reinterpret_cast<LPSTR>( &pMsgBuff ),
-		0,
-		nullptr );
-	if ( nMsgLen == 0 )
-	{
-		return "Unidentified error code";
-	}
-	std::string errorString = pMsgBuff;
-	LocalFree( pMsgBuff );
-	return errorString;
-}
-
-HRESULT Window::Exception::GetErrorCode() const noexcept
-{	
-	return hr;
-}
-
-std::string Window::Exception::GetErrorString() const noexcept
-{	 
-	return TranslateErrorCode( hr );
-}
-
 
 const char* Window::WindowClass::GetName() noexcept
 {
@@ -298,6 +245,10 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 
 Graphics& Window::Gfx()
 {
+	if ( !pGfx )
+	{
+		throw CHWND_NOGFX_EXCEPT();
+	}
 	return *pGfx;
 }
 
@@ -305,3 +256,64 @@ bool Window::IsInClientRegion( int x,int y )
 {
 	return x >= 0 && x < width && y >= 0 && y < height;
 }
+
+
+/*********** EXCEPTION DIFINITIONS ***********/
+std::string Window::Exception::TranslateErrorCode( HRESULT hr ) noexcept
+{
+	char* pMsgBuff = nullptr;
+	DWORD nMsgLen = FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		nullptr,
+		hr,
+		MAKELANGID( LANG_NEUTRAL,SUBLANG_DEFAULT ),
+		reinterpret_cast<LPSTR>( &pMsgBuff ),
+		0,
+		nullptr );
+	if ( nMsgLen == 0 )
+	{
+		return "Unidentified error code";
+	}
+	std::string errorString = pMsgBuff;
+	LocalFree( pMsgBuff );
+	return errorString;
+}
+
+Window::HrException::HrException( int line,const char* file,HRESULT hr ) noexcept
+	:
+	Exception( line,file ),
+	hr( hr )
+{}
+
+const char* Window::HrException::what() const noexcept
+{
+	std::stringstream oss;
+	oss << GetType() << std::endl
+		<< "[Error Code] " << GetErrorCode() << std::endl
+		<< "[Description] " << GetErrorDescription() << std::endl
+		<< GetOriginString();
+	whatBuffer = oss.str();
+	return whatBuffer.c_str();
+}
+
+const char* Window::HrException::GetType() const noexcept
+{
+	return "Chili Window Exception";
+}
+
+
+HRESULT Window::HrException::GetErrorCode() const noexcept
+{
+	return hr;
+}
+
+std::string Window::HrException::GetErrorDescription() const noexcept
+{
+	return Exception::TranslateErrorCode( hr );
+}
+
+const char* Window::NoGfxException::GetType() const noexcept
+{
+	return "Chili Window Exception [No Graphics]";
+}
+/********* END EXCEPTION DIFINITIONS *********/
