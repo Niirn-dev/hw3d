@@ -126,8 +126,10 @@ Window::Window( int width,int height,const char* name )
 	{
 		throw CHWND_LAST_EXCEPT();
 	}
-	// show window
+	// window is set to hidden upon creation
 	ShowWindow( hWnd,SW_SHOWDEFAULT );
+	// initialize graphics
+	pGfx = std::make_unique<Graphics>( hWnd );
 }
 
 Window::~Window()
@@ -292,6 +294,11 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 	}
 	// invoke default window proc for all of the unhandled messages
 	return DefWindowProc( hWnd_in,msg,wParam,lParam );
+}
+
+Graphics& Window::Gfx()
+{
+	return *pGfx;
 }
 
 bool Window::IsInClientRegion( int x,int y )

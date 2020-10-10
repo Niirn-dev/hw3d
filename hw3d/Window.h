@@ -5,6 +5,8 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 #include <optional>
+#include <memory>
+#include "Graphics.h"
 
 class Window
 {
@@ -67,10 +69,12 @@ private:
 public:
 	Keyboard kbd;
 	Mouse mouse;
+	Graphics& Gfx();
 private:
 	int width;
 	int height;
 	HWND hWnd = nullptr;
+	std::unique_ptr<Graphics> pGfx;
 private:
 	bool IsInClientRegion( int x,int y );
 };
