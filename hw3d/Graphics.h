@@ -37,12 +37,23 @@ public:
 	private:
 		std::string reason;
 	};
+	class InfoException : public Exception
+	{
+	public:
+		InfoException( int line,const char* file,std::vector<std::string> infoMsgs );
+		const char* what() const noexcept override;
+		const char* GetType() const noexcept override;
+		std::string GetErrorInfo() const noexcept;
+	private:
+		std::string info;
+	};
 public:
 	Graphics( HWND hWnd );
 	~Graphics() = default;
 	Graphics( const Graphics& ) = delete;
 	Graphics& operator=( const Graphics& ) = delete;
 
+	void DrawTestTriangle();
 	void EndFrame();
 	void ClearBuffer( float r,float g,float b ) noexcept;
 private:
