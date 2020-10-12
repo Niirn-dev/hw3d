@@ -76,18 +76,22 @@ void Graphics::DrawTestTriangle( float angle )
 	{
 		float x;
 		float y;
+		unsigned char r;
+		unsigned char g;
+		unsigned char b;
+
 	};
 	// vertices for the triangle
 	const Vertex vertices[] = {
-		{ 0.0f,0.375f },
-		{ 0.125f,0.125f },
-		{ -0.125f,0.125f },
-		{ -0.125f,0.125f },
-		{ 0.0f,-0.125f },
-		{ -0.25f,-0.125f },
-		{ 0.125f,0.125f },
-		{ 0.25f,-0.125f },
-		{ 0.0f,-0.125f }
+		{  0.0f,	 0.375f,255,0,0 },
+		{  0.125f,	 0.125f,125,125,0 },
+		{ -0.125f,	 0.125f,0,0,175 },
+		{ -0.125f,	 0.125f,17,156,79 },
+		{  0.0f,	-0.125f,192,192,168 },
+		{ -0.25f,	-0.125f,123,241,69 },
+		{  0.125f,	 0.125f,69,42,217 },
+		{  0.25f,	-0.125f,82,43,10 },
+		{  0.0f,	-0.125f,200,0,222 }
 	};
 
 	// make description for vertex buffer
@@ -153,8 +157,8 @@ void Graphics::DrawTestTriangle( float angle )
 	// rotation matrix
 	const ConstantBuffer transform = {
 		{
-			( 3.0f / 4.0f ) * std::cosf( angle ),-std::sinf( angle ),0.0f,0.0f,
-			( 3.0f / 4.0f ) * std::sinf( angle ), std::cosf( angle ),0.0f,0.0f,
+			( 3.0f / 4.0f ) * std::cosf( angle ), std::sinf( angle ),0.0f,0.0f,
+			( 3.0f / 4.0f ) * -std::sinf( angle ),std::cosf( angle ),0.0f,0.0f,
 			0.0f,                                 0.0f,              1.0f,0.0f,
 			0.0f,                                 0.0f,              0.0f,1.0f
 		}
@@ -181,7 +185,8 @@ void Graphics::DrawTestTriangle( float angle )
 	// define input (vertex) layout
 	wrl::ComPtr<ID3D11InputLayout> pInputLayout;
 	D3D11_INPUT_ELEMENT_DESC ied[] = {
-		{ "POSITION",0u,DXGI_FORMAT_R32G32_FLOAT,0u,0u,D3D11_INPUT_PER_VERTEX_DATA,0u }
+		{ "POSITION",0u,DXGI_FORMAT_R32G32_FLOAT,0u,0u,D3D11_INPUT_PER_VERTEX_DATA,0u },
+		{ "COLOR",0u,DXGI_FORMAT_R8G8B8A8_UNORM,0u,8u,D3D11_INPUT_PER_VERTEX_DATA,0u }
 	};
 	GFX_THROW_INFO( pDevice->CreateInputLayout( ied,(UINT)std::size( ied ),pBlob->GetBufferPointer(),pBlob->GetBufferSize(),&pInputLayout ) );
 	// bind input layout
