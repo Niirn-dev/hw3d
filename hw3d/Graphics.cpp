@@ -79,15 +79,15 @@ void Graphics::DrawTestTriangle( float angle )
 	};
 	// vertices for the triangle
 	const Vertex vertices[] = {
-		{ 0.0f,0.25f },
-		{ 0.125f,0.0f },
-		{ -0.125f,0.0f },
-		{ -0.125f,0.0f },
-		{ 0.0f,-0.25f },
-		{ -0.25f,-0.25f },
-		{ 0.125f,0.0f },
-		{ 0.25f,-0.25f },
-		{ 0.0f,-0.25f }
+		{ 0.0f,0.375f },
+		{ 0.125f,0.125f },
+		{ -0.125f,0.125f },
+		{ -0.125f,0.125f },
+		{ 0.0f,-0.125f },
+		{ -0.25f,-0.125f },
+		{ 0.125f,0.125f },
+		{ 0.25f,-0.125f },
+		{ 0.0f,-0.125f }
 	};
 
 	// make description for vertex buffer
