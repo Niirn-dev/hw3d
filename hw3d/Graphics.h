@@ -53,7 +53,7 @@ public:
 	Graphics( const Graphics& ) = delete;
 	Graphics& operator=( const Graphics& ) = delete;
 
-	void DrawTestTriangle();
+	void DrawTestTriangle( float angle );
 	void EndFrame();
 	void ClearBuffer( float r,float g,float b ) noexcept;
 private:

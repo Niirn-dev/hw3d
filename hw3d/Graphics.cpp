@@ -70,7 +70,7 @@ Graphics::Graphics( HWND hWnd )
 	GFX_THROW_INFO( pDevice->CreateRenderTargetView( pBackBuffer.Get(),nullptr,&pTarget ) );
 }
 
-void Graphics::DrawTestTriangle()
+void Graphics::DrawTestTriangle( float angle )
 {
 	struct Vertex
 	{
@@ -140,9 +140,43 @@ void Graphics::DrawTestTriangle()
 	wrl::ComPtr<ID3D11VertexShader> pVertexShader;
 	GFX_THROW_INFO( D3DReadFileToBlob( L"VertexShader.cso",&pBlob ) );
 	GFX_THROW_INFO( pDevice->CreateVertexShader( pBlob->GetBufferPointer(),pBlob->GetBufferSize(),nullptr,&pVertexShader ) );
-
 	// bind vertex shader
 	pContext->VSSetShader( pVertexShader.Get(),nullptr,0u );
+
+	struct ConstantBuffer
+	{
+		struct
+		{
+			float element[4][4];
+		} transformation;
+	};
+	// rotation matrix
+	const ConstantBuffer transform = {
+		{
+			std::cosf( angle ),-std::sinf( angle ),0.0f,0.0f,
+			std::sinf( angle ), std::cosf( angle ),0.0f,0.0f,
+			0.0f,               0.0f,              1.0f,0.0f,
+			0.0f,               0.0f,              0.0f,1.0f
+		}
+	};
+	// make description for transformation buffer
+	D3D11_BUFFER_DESC cbd = {};
+	cbd.ByteWidth = (UINT)sizeof( transform );
+	cbd.Usage = D3D11_USAGE_DYNAMIC;
+	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbd.MiscFlags = 0u;
+	cbd.StructureByteStride = 0u;
+	// subresource
+	D3D11_SUBRESOURCE_DATA csd = {};
+	csd.pSysMem = &transform;
+	csd.SysMemPitch = 0u;
+	csd.SysMemSlicePitch = 0u;
+	// create the buffer
+	wrl::ComPtr<ID3D11Buffer> pTransformBuffer;
+	GFX_THROW_INFO( pDevice->CreateBuffer( &cbd,&csd,&pTransformBuffer ) );
+	// bind buffer to vertex shader
+	pContext->VSSetConstantBuffers( 0u,1u,pTransformBuffer.GetAddressOf() );
 
 	// define input (vertex) layout
 	wrl::ComPtr<ID3D11InputLayout> pInputLayout;

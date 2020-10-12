@@ -23,6 +23,6 @@ void App::DoFrame()
 {
 	const float c = 0.5f * std::sinf( timer.Peek() ) + 0.5f;
 	wnd.Gfx().ClearBuffer( c,1.0f - c,1.0f );
-	wnd.Gfx().DrawTestTriangle();
+	wnd.Gfx().DrawTestTriangle( timer.Peek() );
 	wnd.Gfx().EndFrame();
 }
