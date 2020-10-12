@@ -153,10 +153,10 @@ void Graphics::DrawTestTriangle( float angle )
 	// rotation matrix
 	const ConstantBuffer transform = {
 		{
-			std::cosf( angle ),-std::sinf( angle ),0.0f,0.0f,
-			std::sinf( angle ), std::cosf( angle ),0.0f,0.0f,
-			0.0f,               0.0f,              1.0f,0.0f,
-			0.0f,               0.0f,              0.0f,1.0f
+			( 3.0f / 4.0f ) * std::cosf( angle ),-std::sinf( angle ),0.0f,0.0f,
+			( 3.0f / 4.0f ) * std::sinf( angle ), std::cosf( angle ),0.0f,0.0f,
+			0.0f,                                 0.0f,              1.0f,0.0f,
+			0.0f,                                 0.0f,              0.0f,1.0f
 		}
 	};
 	// make description for transformation buffer
