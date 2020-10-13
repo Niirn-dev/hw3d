@@ -155,8 +155,10 @@ void Graphics::DrawTestTriangle( float angle )
 	};
 	// rotation matrix
 	const ConstantBuffer transform = {
-		dx::XMMatrixRotationZ( angle ) *
-		dx::XMMatrixScaling( 3.0f / 4.0f,1.0f,1.0f )
+		dx::XMMatrixTranspose(
+			dx::XMMatrixRotationZ( angle ) *
+			dx::XMMatrixScaling( 3.0f / 4.0f,1.0f,1.0f )
+		)
 	};
 	// make description for transformation buffer
 	D3D11_BUFFER_DESC cbd = {};
