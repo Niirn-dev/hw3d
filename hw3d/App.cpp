@@ -23,6 +23,7 @@ void App::DoFrame()
 {
 	const float c = 0.5f * std::sinf( timer.Peek() ) + 0.5f;
 	wnd.Gfx().ClearBuffer( c,1.0f - c,1.0f );
-	wnd.Gfx().DrawTestTriangle( timer.Peek() );
+	const auto [mx,my] = wnd.mouse.GetPos();
+	wnd.Gfx().DrawTestTriangle( (float)mx / 400.0f - 1.0f,(float)-my / 300.0f + 1.0f,timer.Peek() );
 	wnd.Gfx().EndFrame();
 }
