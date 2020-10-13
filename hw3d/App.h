@@ -23,5 +23,7 @@ private:
 
 	Window wnd;
 	ChiliTimer timer;
+
+	float offsetZ = 4.0f;
 };
 

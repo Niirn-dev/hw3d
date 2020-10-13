@@ -72,7 +72,7 @@ Graphics::Graphics( HWND hWnd )
 	GFX_THROW_INFO( pDevice->CreateRenderTargetView( pBackBuffer.Get(),nullptr,&pTarget ) );
 }
 
-void Graphics::DrawTestTriangle( float offsetX,float offsetY,float angle )
+void Graphics::DrawTestTriangle( float offsetX,float offsetY,float offsetZ,float angle )
 {
 	struct Vertex
 	{
@@ -182,7 +182,6 @@ void Graphics::DrawTestTriangle( float offsetX,float offsetY,float angle )
 		dx::XMMATRIX transformation;
 	};
 	// rotation matrix
-	const auto offsetZ = 4.0f;
 	const ConstantBuffer transform = {
 		dx::XMMatrixTranspose(
 			dx::XMMatrixRotationX( angle ) *
