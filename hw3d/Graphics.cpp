@@ -2,6 +2,7 @@
 #include "dxerr.h"
 #include <sstream>
 #include <d3dcompiler.h>
+#include <DirectXMath.h>
 
 #pragma comment( lib,"d3d11.lib" )
 #pragma comment( lib,"d3dcompiler.lib" )
@@ -22,6 +23,7 @@
 #endif // !NDEBUG
 
 namespace wrl = Microsoft::WRL;
+namespace dx = DirectX;
 
 Graphics::Graphics( HWND hWnd )
 {
@@ -149,19 +151,12 @@ void Graphics::DrawTestTriangle( float angle )
 
 	struct ConstantBuffer
 	{
-		struct
-		{
-			float element[4][4];
-		} transformation;
+		dx::XMMATRIX transformation;
 	};
 	// rotation matrix
 	const ConstantBuffer transform = {
-		{
-			( 3.0f / 4.0f ) * std::cosf( angle ), std::sinf( angle ),0.0f,0.0f,
-			( 3.0f / 4.0f ) * -std::sinf( angle ),std::cosf( angle ),0.0f,0.0f,
-			0.0f,                                 0.0f,              1.0f,0.0f,
-			0.0f,                                 0.0f,              0.0f,1.0f
-		}
+		dx::XMMatrixRotationZ( angle ) *
+		dx::XMMatrixScaling( 3.0f / 4.0f,1.0f,1.0f )
 	};
 	// make description for transformation buffer
 	D3D11_BUFFER_DESC cbd = {};
