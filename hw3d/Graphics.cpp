@@ -76,26 +76,31 @@ void Graphics::DrawTestTriangle( float offsetX,float offsetY,float angle )
 {
 	struct Vertex
 	{
-		float x;
-		float y;
-		unsigned char r;
-		unsigned char g;
-		unsigned char b;
-
+		struct
+		{
+			float x;
+			float y;
+			float z;
+		} pos;
+		struct
+		{
+			unsigned char r;
+			unsigned char g;
+			unsigned char b;
+			unsigned char a;
+		} color;
 	};
 	// vertices for the triangle
 	const Vertex vertices[] = {
-		{  0.0f,	 0.375f,255,0,0 },
-		{  0.125f,	 0.125f,125,125,0 },
-		{ -0.125f,	 0.125f,0,0,175 },
-		{ -0.125f,	 0.125f,17,156,79 },
-		{  0.0f,	-0.125f,192,192,168 },
-		{ -0.25f,	-0.125f,123,241,69 },
-		{  0.125f,	 0.125f,69,42,217 },
-		{  0.25f,	-0.125f,82,43,10 },
-		{  0.0f,	-0.125f,200,0,222 }
+		{ -1.0f,-1.0f,-1.0f, 255,0,0,0 },
+		{  1.0f,-1.0f,-1.0f, 255,0,255,0 },
+		{ -1.0f, 1.0f,-1.0f, 255,255,0,0 },
+		{  1.0f, 1.0f,-1.0f, 255,255,255,0 },
+		{ -1.0f,-1.0f, 1.0f, 0,255,0,0 },
+		{  1.0f,-1.0f, 1.0f, 0,0,255,0 },
+		{ -1.0f, 1.0f, 1.0f, 0,255,255,0 },
+		{  1.0f, 1.0f, 1.0f, 0,0,0,0 },
 	};
-
 	// make description for vertex buffer
 	D3D11_BUFFER_DESC bd = {};
 	bd.ByteWidth = (UINT)sizeof( vertices );
@@ -104,21 +109,44 @@ void Graphics::DrawTestTriangle( float offsetX,float offsetY,float angle )
 	bd.CPUAccessFlags = 0u;
 	bd.MiscFlags = 0u;
 	bd.StructureByteStride = sizeof( Vertex );
-
 	// make subresource data
 	D3D11_SUBRESOURCE_DATA sd = {};
 	sd.pSysMem = &vertices;
 	sd.SysMemPitch = 0u;
 	sd.SysMemSlicePitch = 0u;
-
 	// create vertex buffer
 	wrl::ComPtr<ID3D11Buffer> pVertexBuffer;
 	GFX_THROW_INFO( pDevice->CreateBuffer( &bd,&sd,&pVertexBuffer ) );
-
 	// bind vertex buffer to the context
 	UINT stride = (UINT)sizeof( Vertex );
 	UINT offset = 0u;
 	pContext->IASetVertexBuffers( 0u,1u,pVertexBuffer.GetAddressOf(),&stride,&offset );
+
+	// make index list
+	const unsigned short indices[] = {
+		0,2,1,	2,3,1,
+		1,3,5,	3,7,5,
+		2,6,3,	3,6,7,
+		4,5,7,	4,7,6,
+		0,4,2,	2,4,6,
+		0,1,4,	1,5,4,
+	};
+	// indices buffer description
+	D3D11_BUFFER_DESC ibd = {};
+	ibd.ByteWidth = (UINT)sizeof( indices );
+	ibd.Usage = D3D11_USAGE_DEFAULT;
+	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	ibd.CPUAccessFlags = 0u;
+	ibd.MiscFlags = 0u;
+	ibd.StructureByteStride = sizeof( unsigned short );
+	// make subresource data
+	D3D11_SUBRESOURCE_DATA isd = {};
+	isd.pSysMem = indices;
+	// create index buffer
+	wrl::ComPtr<ID3D11Buffer> pIndexBuffer;
+	GFX_THROW_INFO( pDevice->CreateBuffer( &ibd,&isd,&pIndexBuffer ) );
+	// bind index buffer to the context
+	pContext->IASetIndexBuffer( pIndexBuffer.Get(),DXGI_FORMAT_R16_UINT,0u );
 
 	// create pixel shader
 	wrl::ComPtr<ID3D11PixelShader> pPixelShader;
@@ -154,11 +182,13 @@ void Graphics::DrawTestTriangle( float offsetX,float offsetY,float angle )
 		dx::XMMATRIX transformation;
 	};
 	// rotation matrix
+	const auto offsetZ = 4.0f;
 	const ConstantBuffer transform = {
 		dx::XMMatrixTranspose(
+			dx::XMMatrixRotationX( angle ) *
 			dx::XMMatrixRotationZ( angle ) *
-			dx::XMMatrixScaling( 3.0f / 4.0f,1.0f,1.0f ) *
-			dx::XMMatrixTranslation( offsetX,offsetY,0.0f )
+			dx::XMMatrixTranslation( offsetX * offsetZ,offsetY * offsetZ,offsetZ ) *
+			dx::XMMatrixPerspectiveLH( 1.0f,3.0f / 4.0f,0.5f,10.0f )
 		)
 	};
 	// make description for transformation buffer
@@ -183,8 +213,8 @@ void Graphics::DrawTestTriangle( float offsetX,float offsetY,float angle )
 	// define input (vertex) layout
 	wrl::ComPtr<ID3D11InputLayout> pInputLayout;
 	D3D11_INPUT_ELEMENT_DESC ied[] = {
-		{ "POSITION",0u,DXGI_FORMAT_R32G32_FLOAT,0u,0u,D3D11_INPUT_PER_VERTEX_DATA,0u },
-		{ "COLOR",0u,DXGI_FORMAT_R8G8B8A8_UNORM,0u,8u,D3D11_INPUT_PER_VERTEX_DATA,0u }
+		{ "POSITION",0u,DXGI_FORMAT_R32G32B32_FLOAT,0u,0u,D3D11_INPUT_PER_VERTEX_DATA,0u },
+		{ "COLOR",0u,DXGI_FORMAT_R8G8B8A8_UNORM,0u,12u,D3D11_INPUT_PER_VERTEX_DATA,0u },
 	};
 	GFX_THROW_INFO( pDevice->CreateInputLayout( ied,(UINT)std::size( ied ),pBlob->GetBufferPointer(),pBlob->GetBufferSize(),&pInputLayout ) );
 	// bind input layout
@@ -193,7 +223,7 @@ void Graphics::DrawTestTriangle( float offsetX,float offsetY,float angle )
 	// set primitive topology
 	pContext->IASetPrimitiveTopology( D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
-	GFX_THROW_ONLYINFO( pContext->Draw( (UINT)std::size( vertices ),0u ) );
+	GFX_THROW_ONLYINFO( pContext->DrawIndexed( (UINT)std::size( indices ),0u,0 ) );
 }
 
 void Graphics::EndFrame()
