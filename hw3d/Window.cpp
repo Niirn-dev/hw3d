@@ -200,13 +200,8 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 		break;
 	case WM_MOUSEWHEEL:
 	{
-		// get mouse position in screen space
-		const auto ps = MAKEPOINTS( lParam );
-		// convert position to client space
-		POINT p = { ps.x,ps.y };
-		ScreenToClient( hWnd,&p );
 		const auto delta = GET_WHEEL_DELTA_WPARAM( wParam );
-		mouse.OnWheelDelta( p.x,p.y,delta );
+		mouse.OnWheelDelta( delta );
 	}
 		break;
 	case WM_MOUSEMOVE:

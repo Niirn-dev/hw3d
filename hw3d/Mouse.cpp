@@ -127,34 +127,30 @@ void Mouse::OnRightRelease( int x_in,int y_in ) noexcept
     TrimBuffer();
 }
 
-void Mouse::OnWheelUp( int x_in,int y_in ) noexcept
+void Mouse::OnWheelUp() noexcept
 {
-    x = x_in;
-    y = y_in;
     buffer.push( Event{ Event::Type::WheelUp,*this } );
     TrimBuffer();
 }
 
-void Mouse::OnWheelDown( int x_in,int y_in ) noexcept
+void Mouse::OnWheelDown() noexcept
 {
-    x = x_in;
-    y = y_in;
     buffer.push( Event{ Event::Type::WheelDown,*this } );
     TrimBuffer();
 }
 
-void Mouse::OnWheelDelta( int x_in,int y_in,int delta ) noexcept
+void Mouse::OnWheelDelta( int delta ) noexcept
 {
     wheelDelta += delta;
     while ( wheelDelta >= WHEEL_DELTA )
     {
         wheelDelta -= WHEEL_DELTA;
-        OnWheelUp( x_in,y_in );
+        OnWheelUp();
     }
     while ( wheelDelta <= -WHEEL_DELTA )
     {
         wheelDelta += WHEEL_DELTA;
-        OnWheelDown( x_in,y_in );
+        OnWheelDown();
     }
 }
 

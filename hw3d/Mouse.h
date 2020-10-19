@@ -59,9 +59,9 @@ private:
 	void OnLeftRelease( int x_in,int y_in ) noexcept;
 	void OnRightPress( int x_in,int y_in ) noexcept;
 	void OnRightRelease( int x_in,int y_in ) noexcept;
-	void OnWheelUp( int x_in,int y_in ) noexcept;
-	void OnWheelDown( int x_in,int y_in ) noexcept;
-	void OnWheelDelta( int x_in,int y_in,int delta ) noexcept;
+	void OnWheelUp() noexcept;
+	void OnWheelDown() noexcept;
+	void OnWheelDelta( int delta ) noexcept;
 	void OnMouseMove( int x_in,int y_in ) noexcept;
 	void OnMouseEnter() noexcept;
 	void OnMouseLeave() noexcept;
