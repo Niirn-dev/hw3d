@@ -1,6 +1,7 @@
 #include "Window.h"
 #include "resource.h"
 #include <sstream>
+#include "WindowThrowMacros.h"
 
 // create wndClass instance
 Window::WindowClass Window::WindowClass::wndClass;
