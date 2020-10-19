@@ -29,16 +29,19 @@ void App::DoFrame()
 		const auto e = wnd.mouse.Read();
 		switch ( e->GetType() )
 		{
-		case Mouse::Event::Type::LPress:
-			offsetZ += 0.5f;
+		case Mouse::Event::Type::WheelUp:
+			offsetZ += 0.1f;
 			break;
-		case Mouse::Event::Type::RPress:
-			offsetZ -= 0.5f;
+		case Mouse::Event::Type::WheelDown:
+			offsetZ -= 0.1f;
 			break;
 		default:
 			break;
 		}
 	}
-	wnd.Gfx().DrawTestTriangle( (float)mx / 400.0f - 1.0f,(float)-my / 300.0f + 1.0f,offsetZ,timer.Peek() );
+	const auto x = (float)mx / 400.0f - 1.0f;
+	const auto y = (float)-my / 300.0f + 1.0f;
+	wnd.Gfx().DrawTestTriangle( x,y,offsetZ,timer.Peek() );
+	wnd.Gfx().DrawTestTriangle( x,y,8.0f - offsetZ,-timer.Peek() );
 	wnd.Gfx().EndFrame();
 }

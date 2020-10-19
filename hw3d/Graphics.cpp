@@ -39,8 +39,8 @@ Graphics::Graphics( HWND hWnd )
 	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.OutputWindow = hWnd;
-	sd.SampleDesc.Count = 1;
-	sd.SampleDesc.Quality = 0;
+	sd.SampleDesc.Count = 1u;
+	sd.SampleDesc.Quality = 0u;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sd.Windowed = TRUE;
 	sd.Flags = 0;
@@ -70,6 +70,39 @@ Graphics::Graphics( HWND hWnd )
 	wrl::ComPtr<ID3D11Resource> pBackBuffer = nullptr;
 	GFX_THROW_INFO( pSwap->GetBuffer( 0,__uuidof(ID3D11Resource),&pBackBuffer ) );
 	GFX_THROW_INFO( pDevice->CreateRenderTargetView( pBackBuffer.Get(),nullptr,&pTarget ) );
+
+	// depth stencil description
+	D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+	dsDesc.DepthEnable = true;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	dsDesc.StencilEnable = false;
+	// fill in depth stancil state
+	wrl::ComPtr<ID3D11DepthStencilState> pDepthState;
+	GFX_THROW_INFO( pDevice->CreateDepthStencilState( &dsDesc,&pDepthState ) );
+
+	// create depth stencil texture
+	D3D11_TEXTURE2D_DESC tDesc = {};
+	tDesc.Width = 800u;
+	tDesc.Height = 600u;
+	tDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	tDesc.MipLevels = 1u;
+	tDesc.ArraySize = 1u;
+	tDesc.SampleDesc.Count = 1u;
+	tDesc.SampleDesc.Quality = 0u;
+	tDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	wrl::ComPtr<ID3D11Texture2D> pDepthStencil;
+	GFX_THROW_INFO( pDevice->CreateTexture2D( &tDesc,nullptr,&pDepthStencil ) );
+
+	// create view of depth stencil texture
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	dsvDesc.Texture2D.MipSlice = 0u;
+	GFX_THROW_INFO( pDevice->CreateDepthStencilView( pDepthStencil.Get(),&dsvDesc,&pDSV ) );
+
+	// bind render target and depth stencil view to the Output Merger
+	pContext->OMSetRenderTargets( 1u,pTarget.GetAddressOf(),pDSV.Get() );
 }
 
 void Graphics::DrawTestTriangle( float offsetX,float offsetY,float offsetZ,float angle )
@@ -149,9 +182,6 @@ void Graphics::DrawTestTriangle( float offsetX,float offsetY,float offsetZ,float
 
 	// bind pixel shader
 	pContext->PSSetShader( pPixelShader.Get(),nullptr,0u );
-
-	// bind render target
-	pContext->OMSetRenderTargets( 1u,pTarget.GetAddressOf(),nullptr );
 
 	// configure viewport
 	D3D11_VIEWPORT vp;
@@ -275,6 +305,7 @@ void Graphics::ClearBuffer( float r,float g,float b ) noexcept
 		pTarget.Get(),
 		color
 	);
+	pContext->ClearDepthStencilView( pDSV.Get(),D3D11_CLEAR_DEPTH,1.0f,0u );
 }
 
 /*********** EXCEPTION DIFINITIONS ***********/
