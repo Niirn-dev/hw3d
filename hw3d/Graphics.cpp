@@ -82,24 +82,17 @@ void Graphics::DrawTestTriangle( float offsetX,float offsetY,float offsetZ,float
 			float y;
 			float z;
 		} pos;
-		struct
-		{
-			unsigned char r;
-			unsigned char g;
-			unsigned char b;
-			unsigned char a;
-		} color;
 	};
 	// vertices for the triangle
 	const Vertex vertices[] = {
-		{ -1.0f,-1.0f,-1.0f, 255,0,0,0 },
-		{  1.0f,-1.0f,-1.0f, 255,0,255,0 },
-		{ -1.0f, 1.0f,-1.0f, 255,255,0,0 },
-		{  1.0f, 1.0f,-1.0f, 255,255,255,0 },
-		{ -1.0f,-1.0f, 1.0f, 0,255,0,0 },
-		{  1.0f,-1.0f, 1.0f, 0,0,255,0 },
-		{ -1.0f, 1.0f, 1.0f, 0,255,255,0 },
-		{  1.0f, 1.0f, 1.0f, 0,0,0,0 },
+		{ -1.0f,-1.0f,-1.0f },
+		{  1.0f,-1.0f,-1.0f },
+		{ -1.0f, 1.0f,-1.0f },
+		{  1.0f, 1.0f,-1.0f },
+		{ -1.0f,-1.0f, 1.0f },
+		{  1.0f,-1.0f, 1.0f },
+		{ -1.0f, 1.0f, 1.0f },
+		{  1.0f, 1.0f, 1.0f },
 	};
 	// make description for vertex buffer
 	D3D11_BUFFER_DESC bd = {};
@@ -209,11 +202,42 @@ void Graphics::DrawTestTriangle( float offsetX,float offsetY,float offsetZ,float
 	// bind buffer to vertex shader
 	pContext->VSSetConstantBuffers( 0u,1u,pTransformBuffer.GetAddressOf() );
 
+	// constant buffer for face colors
+	struct ColorBuffer
+	{
+		float r;
+		float g;
+		float b;
+		float a;
+	};
+	const ColorBuffer colors[] = {
+		{ 1.0f,0.0f,0.0f,1.0f },
+		{ 0.0f,1.0f,0.0f,1.0f },
+		{ 1.0f,0.0f,1.0f,1.0f },
+		{ 0.0f,0.0f,1.0f,1.0f },
+		{ 0.0f,1.0f,1.0f,1.0f },
+		{ 1.0f,1.0f,1.0f,1.0f },
+	};
+	// description
+	D3D11_BUFFER_DESC ccbd = {};
+	ccbd.ByteWidth = (UINT)sizeof( colors );
+	ccbd.Usage = D3D11_USAGE_DEFAULT;
+	ccbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	ccbd.CPUAccessFlags = 0u;
+	ccbd.StructureByteStride = sizeof( ColorBuffer );
+	// subresource
+	D3D11_SUBRESOURCE_DATA ccsd = {};
+	ccsd.pSysMem = colors;
+	// create the buffer
+	wrl::ComPtr<ID3D11Buffer> pColorBuffer;
+	GFX_THROW_INFO( pDevice->CreateBuffer( &ccbd,&ccsd,&pColorBuffer ) );
+	// bind buffer to pixel shader
+	pContext->PSSetConstantBuffers( 0u,1u,pColorBuffer.GetAddressOf() );
+
 	// define input (vertex) layout
 	wrl::ComPtr<ID3D11InputLayout> pInputLayout;
 	D3D11_INPUT_ELEMENT_DESC ied[] = {
 		{ "POSITION",0u,DXGI_FORMAT_R32G32B32_FLOAT,0u,0u,D3D11_INPUT_PER_VERTEX_DATA,0u },
-		{ "COLOR",0u,DXGI_FORMAT_R8G8B8A8_UNORM,0u,12u,D3D11_INPUT_PER_VERTEX_DATA,0u },
 	};
 	GFX_THROW_INFO( pDevice->CreateInputLayout( ied,(UINT)std::size( ied ),pBlob->GetBufferPointer(),pBlob->GetBufferSize(),&pInputLayout ) );
 	// bind input layout
