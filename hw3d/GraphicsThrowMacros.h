@@ -14,3 +14,9 @@
 #define GFX_DEVICE_REMOVED_EXCEPT(hr) Graphics::DeviceRemovedException( __LINE__,__FILE__,(hr) )
 #define GFX_THROW_ONLYINFO(call) (call)
 #endif // !NDEBUG
+
+#ifndef NDEBUG
+#define INFOMAN(gfx) auto& infoManager = GetInfoManager( (gfx) )
+#else
+#define INFOMAN(gfx) // no info manager in release
+#endif // !NDEBUG

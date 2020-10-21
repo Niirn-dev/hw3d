@@ -1,10 +1,31 @@
 #include "App.h"
-#include <sstream>
-#include <iomanip>
+#include "Box.h"
+#include <memory>
+#include <random>
+#include <algorithm>
+#include <iterator>
 
 App::App( std::optional<int> wndWidth,std::optional<int> wndHeight,std::optional<std::string> wndName )
     :
     wnd( Window{ wndWidth.value_or( wndWidthDefault ),wndHeight.value_or( wndHeightDefault ),wndName.value_or( "HW3D Window" ).c_str() } )
+{
+	std::mt19937 rng{ std::random_device{}() };
+	std::uniform_real_distribution<float> rDist( 0.0f,20.0f );
+	std::uniform_real_distribution<float> aDist( 0.0f,3.1415f * 2.0f );
+	std::uniform_real_distribution<float> sDist( 0.0f,3.1415f * 0.3f );
+
+	std::generate_n(
+		std::back_inserter( boxes ),
+		80,
+		[&]()
+		{
+			return std::make_unique<Box>( wnd.Gfx(),rng,rDist,aDist,sDist );
+		} );
+
+	wnd.Gfx().SetProjection( DirectX::XMMatrixPerspectiveLH( 1.0f,3.0f / 4.0f,0.5f,40.0f ) );
+}
+
+App::~App()
 {}
 
 int App::Go()
@@ -21,27 +42,12 @@ int App::Go()
 
 void App::DoFrame()
 {
-	const float c = 0.5f * std::sinf( timer.Peek() ) + 0.5f;
-	wnd.Gfx().ClearBuffer( c,1.0f - c,1.0f );
-	const auto [mx,my] = wnd.mouse.GetPos();
-	while ( !wnd.mouse.IsEmpty() )
+	const float dt = timer.Mark();
+	wnd.Gfx().ClearBuffer( 0.07f,0.0f,0.12f );
+	for ( auto& box : boxes )
 	{
-		const auto e = wnd.mouse.Read();
-		switch ( e->GetType() )
-		{
-		case Mouse::Event::Type::WheelUp:
-			offsetZ += 0.1f;
-			break;
-		case Mouse::Event::Type::WheelDown:
-			offsetZ -= 0.1f;
-			break;
-		default:
-			break;
-		}
+		box->Update( dt );
+		box->Draw( wnd.Gfx() );
 	}
-	const auto x = (float)mx / 400.0f - 1.0f;
-	const auto y = (float)-my / 300.0f + 1.0f;
-	wnd.Gfx().DrawTestTriangle( x,y,offsetZ,timer.Peek() );
-	wnd.Gfx().DrawTestTriangle( x,y,8.0f - offsetZ,-timer.Peek() );
 	wnd.Gfx().EndFrame();
 }

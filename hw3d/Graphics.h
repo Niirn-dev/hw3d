@@ -6,9 +6,11 @@
 #include <vector>
 #include "DxgiInfoManager.h"
 #include <wrl.h>
+#include <DirectXMath.h>
 
 class Graphics
 {
+	friend class Bindable;
 public:
 	// define types for graphics related exceptions
 	class Exception : public ChiliException
@@ -53,7 +55,13 @@ public:
 	Graphics( const Graphics& ) = delete;
 	Graphics& operator=( const Graphics& ) = delete;
 
-	void DrawTestTriangle( float offsetX,float offsetY,float offsetZ,float angle );
+	void SetProjection( DirectX::XMMATRIX proj ) noexcept;
+	DirectX::XMMATRIX GetProjection() const noexcept;
+private:
+	DirectX::XMMATRIX projection = DirectX::XMMatrixIdentity();
+
+public:
+	void DrawIndexed( UINT count ) noexcept( !IS_DEBUG );
 	void EndFrame();
 	void ClearBuffer( float r,float g,float b ) noexcept;
 private:

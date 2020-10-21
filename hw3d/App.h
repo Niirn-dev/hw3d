@@ -3,7 +3,7 @@
 #include "Window.h"
 #include <optional>
 #include <string>
-#include  "ChiliTimer.h"
+#include "ChiliTimer.h"
 
 class App
 {
@@ -13,6 +13,7 @@ public:
 		 std::optional<std::string> wndName = std::nullopt );
 	App( const App& ) = delete;
 	App& operator=( const App& ) = delete;
+	~App();
 
 	int Go();
 private:
@@ -23,7 +24,6 @@ private:
 
 	Window wnd;
 	ChiliTimer timer;
-
-	float offsetZ = 4.0f;
+	std::vector<std::unique_ptr<class Box>> boxes;
 };
 
