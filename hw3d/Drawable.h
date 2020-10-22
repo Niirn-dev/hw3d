@@ -8,6 +8,8 @@ class Bindable;
 
 class Drawable
 {
+	template<class D>
+	friend class DrawableBase;
 public:
 	Drawable() = default;
 	Drawable( const Drawable& ) = delete;
@@ -15,10 +17,13 @@ public:
 	virtual ~Drawable() = default;
 	void Draw( Graphics& gfx ) noexcept( !IS_DEBUG );
 	virtual void Update( float dt ) noexcept = 0;
+	virtual DirectX::XMMATRIX GetTransformXM() const noexcept = 0;
+protected:
 	void AddBind( std::unique_ptr<Bindable> pBind ) noexcept;
 	void AddIndexBuffer( std::unique_ptr<class IndexBuffer> pBind ) noexcept;
-	virtual DirectX::XMMATRIX GetTransformXM() const noexcept = 0;
 private:
-	const IndexBuffer* pIndexBuffer = nullptr;
+	virtual const std::vector<std::unique_ptr<Bindable>>& GetStaticBinds() const noexcept = 0;
+private:
+	const class IndexBuffer* pIndexBuffer = nullptr;
 	std::vector<std::unique_ptr<Bindable>> binds;
 };
