@@ -5,5 +5,5 @@ cbuffer CBuff
 
 float4 main( uint id : SV_PrimitiveID ) : SV_TARGET
 {
-	return float4( color[id / 2] );
+	return float4( color[id / 2 % 6] );
 }
