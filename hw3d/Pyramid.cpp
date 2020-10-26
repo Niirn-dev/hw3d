@@ -6,7 +6,8 @@ Pyramid::Pyramid( Graphics& gfx,
 	std::mt19937& rng,
 	std::uniform_real_distribution<float>& rDist,
 	std::uniform_real_distribution<float>& angleDist,
-	std::uniform_real_distribution<float>& speedDist )
+	std::uniform_real_distribution<float>& speedDist,
+	std::uniform_real_distribution<float>& distortionDist )
 	:
 	r( rDist( rng ) ),
 	roll( angleDist( rng ) ),
@@ -29,7 +30,7 @@ Pyramid::Pyramid( Graphics& gfx,
 			DirectX::XMFLOAT3 pos;
 		};
 
-		const auto itlist = Cone::MakeTesselated<Vertex>( 4 );
+		auto itlist = Cone::MakeTesselated<Vertex>( 4 );
 		AddStaticBind( std::make_unique<VertexBuffer>( gfx,itlist.vertices ) );
 
 		auto pvs = std::make_unique<VertexShader>( gfx,L"VertexShader.cso" );
@@ -72,6 +73,10 @@ Pyramid::Pyramid( Graphics& gfx,
 	else
 	{
 		SetIndexFromStatic();
+		DirectX::XMStoreFloat3x3( 
+			&mt,
+			DirectX::XMMatrixScaling( 1.0f,1.0f,distortionDist( rng ) )
+		);
 	}
 
 	AddBind( std::make_unique<TransformCBuf>( gfx,*this ) );
@@ -89,7 +94,8 @@ void Pyramid::Update( float dt ) noexcept
 
 DirectX::XMMATRIX Pyramid::GetTransformXM() const noexcept
 {
-	return DirectX::XMMatrixRotationRollPitchYaw( pitch,yaw,roll ) *
+	return DirectX::XMLoadFloat3x3( &mt ) *
+		DirectX::XMMatrixRotationRollPitchYaw( pitch,yaw,roll ) *
 		DirectX::XMMatrixTranslation( r,0.0f,0.0f ) *
 		DirectX::XMMatrixRotationRollPitchYaw( theta,phi,chi ) *
 		DirectX::XMMatrixTranslation( 0.0f,0.0f,20.0f );

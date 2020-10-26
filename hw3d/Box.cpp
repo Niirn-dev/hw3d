@@ -7,7 +7,8 @@ Box::Box( Graphics& gfx,
 	std::mt19937& rng,
     std::uniform_real_distribution<float>& rDist,
     std::uniform_real_distribution<float>& angleDist,
-    std::uniform_real_distribution<float>& speedDist )
+    std::uniform_real_distribution<float>& speedDist,
+	std::uniform_real_distribution<float>& distortionDist )
 	:
 	r( rDist( rng ) ),
 	roll( angleDist( rng ) ),
@@ -30,7 +31,7 @@ Box::Box( Graphics& gfx,
 			DirectX::XMFLOAT3 pos;
 		};
 
-		const auto itlist = Cube::Make<Vertex>();
+		auto itlist = Cube::Make<Vertex>();
 		AddStaticBind( std::make_unique<VertexBuffer>( gfx,itlist.vertices ) );
 
 		auto pvs = std::make_unique<VertexShader>( gfx,L"VertexShader.cso" );
@@ -76,6 +77,10 @@ Box::Box( Graphics& gfx,
 	}
 
 	AddBind( std::make_unique<TransformCBuf>( gfx,*this ) );
+	DirectX::XMStoreFloat3x3( 
+		&mt,
+		DirectX::XMMatrixScaling( 1.0f,1.0f,distortionDist( rng ) ) 
+	);
 }
 
 void Box::Update( float dt ) noexcept
@@ -90,7 +95,8 @@ void Box::Update( float dt ) noexcept
 
 DirectX::XMMATRIX Box::GetTransformXM() const noexcept
 {
-    return DirectX::XMMatrixRotationRollPitchYaw( pitch,yaw,roll ) *
+    return DirectX::XMLoadFloat3x3( &mt ) *
+		DirectX::XMMatrixRotationRollPitchYaw( pitch,yaw,roll ) *
 		DirectX::XMMatrixTranslation( r,0.0f,0.0f ) *
 		DirectX::XMMatrixRotationRollPitchYaw( theta,phi,chi ) *
 		DirectX::XMMatrixTranslation( 0.0f,0.0f,20.0f );

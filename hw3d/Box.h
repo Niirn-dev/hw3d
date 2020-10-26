@@ -9,7 +9,8 @@ public:
 		 std::mt19937& rng,
 		 std::uniform_real_distribution<float>& rDist,
 		 std::uniform_real_distribution<float>& angleDist,
-		 std::uniform_real_distribution<float>& speedDist );
+		 std::uniform_real_distribution<float>& speedDist,
+		 std::uniform_real_distribution<float>& distortionDist );
 	void Update( float dt ) noexcept override;
 	DirectX::XMMATRIX GetTransformXM() const noexcept override;
 private:
@@ -28,4 +29,6 @@ private:
 	float dtheta = 0.0f;
 	float dphi = 0.0f;
 	float dchi = 0.0f;
+	// model tranform
+	DirectX::XMFLOAT3X3 mt;
 };

@@ -6,7 +6,9 @@ Spheroid::Spheroid( Graphics& gfx,
 	std::mt19937& rng,
 	std::uniform_real_distribution<float>& rDist,
 	std::uniform_real_distribution<float>& angleDist,
-	std::uniform_real_distribution<float>& speedDist )
+	std::uniform_real_distribution<float>& speedDist,
+	std::uniform_real_distribution<float>& distortionDist,
+	std::uniform_int_distribution<int>& divDist )
 	:
 	r( rDist( rng ) ),
 	roll( angleDist( rng ) ),
@@ -22,23 +24,22 @@ Spheroid::Spheroid( Graphics& gfx,
 	dphi( speedDist( rng ) ),
 	dchi( speedDist( rng ) )
 {
+	struct Vertex
+	{
+		DirectX::XMFLOAT3 pos;
+	};
+	// since tesselation is randomazed, both vertices and indices can't be static
+	auto itlist = Sphere::MakeTesselated<Vertex>( divDist( rng ),divDist( rng ) );
+	AddBind( std::make_unique<VertexBuffer>( gfx,itlist.vertices ) );
+	AddIndexBuffer( std::make_unique<IndexBuffer>( gfx,itlist.indices ) );
+
 	if ( !IsStaticInitialized() )
 	{
-		struct Vertex
-		{
-			DirectX::XMFLOAT3 pos;
-		};
-
-		const auto itlist = Sphere::Make<Vertex>();
-		AddStaticBind( std::make_unique<VertexBuffer>( gfx,itlist.vertices ) );
-
 		auto pvs = std::make_unique<VertexShader>( gfx,L"VertexShader.cso" );
 		auto pvsbc = pvs->GetBytecode();
 		AddStaticBind( std::move( pvs ) );
 
 		AddStaticBind( std::make_unique<PixelShader>( gfx,L"PixelShader.cso" ) );
-
-		AddStaticIndexBuffer( std::make_unique<IndexBuffer>( gfx,itlist.indices ) );
 
 		struct ColorBuffer
 		{
@@ -69,12 +70,12 @@ Spheroid::Spheroid( Graphics& gfx,
 
 		AddStaticBind( std::make_unique<Topology>( gfx,D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST ) );
 	}
-	else
-	{
-		SetIndexFromStatic();
-	}
 
 	AddBind( std::make_unique<TransformCBuf>( gfx,*this ) );
+	DirectX::XMStoreFloat3x3(
+		&mt,
+		DirectX::XMMatrixScaling( 1.0f,1.0f,distortionDist( rng ) )
+	);
 }
 
 void Spheroid::Update( float dt ) noexcept
@@ -89,7 +90,8 @@ void Spheroid::Update( float dt ) noexcept
 
 DirectX::XMMATRIX Spheroid::GetTransformXM() const noexcept
 {
-    return DirectX::XMMatrixRotationRollPitchYaw( pitch,yaw,roll ) *
+	return DirectX::XMLoadFloat3x3( &mt ) *
+		DirectX::XMMatrixRotationRollPitchYaw( pitch,yaw,roll ) *
         DirectX::XMMatrixTranslation( r,0.0f,0.0f ) *
         DirectX::XMMatrixRotationRollPitchYaw( theta,phi,chi ) *
         DirectX::XMMatrixTranslation( 0.0f,0.0f,20.0f );

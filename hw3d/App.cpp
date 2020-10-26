@@ -15,24 +15,26 @@ App::App( std::optional<int> wndWidth,std::optional<int> wndHeight,std::optional
 	std::uniform_real_distribution<float> rDist( 0.0f,20.0f );
 	std::uniform_real_distribution<float> aDist( 0.0f,3.1415f * 2.0f );
 	std::uniform_real_distribution<float> sDist( 0.0f,3.1415f * 0.3f );
+	std::uniform_real_distribution<float> distortionDist( 0.8f,1.6f );
+	std::uniform_int_distribution<int> divDist( 4,48 );
 	std::uniform_int_distribution<int> shapeDist( 1,3 );
 
 	std::generate_n(
 		std::back_inserter( drawables ),
-		180,
+		140,
 		[&]() -> std::unique_ptr<Drawable>
 		{
 			switch ( shapeDist( rng ) )
 			{
 			case 1:
-				return std::make_unique<Box>( wnd.Gfx(),rng,rDist,aDist,sDist );
+				return std::make_unique<Box>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
 			case 2:
-				return std::make_unique<Pyramid>( wnd.Gfx(),rng,rDist,aDist,sDist );
+				return std::make_unique<Pyramid>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
 			case 3:
-				return std::make_unique<Spheroid>( wnd.Gfx(),rng,rDist,aDist,sDist );
+				return std::make_unique<Spheroid>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist,divDist );
 			default:
 				assert( "Wrong shape type" && false );
-				return std::make_unique<Box>( wnd.Gfx(),rng,rDist,aDist,sDist );
+				return std::make_unique<Box>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
 			}
 		} );
 
