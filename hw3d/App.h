@@ -24,6 +24,6 @@ private:
 
 	Window wnd;
 	ChiliTimer timer;
-	std::vector<std::unique_ptr<class Box>> boxes;
+	std::vector<std::unique_ptr<class Drawable>> drawables;
 };
 
