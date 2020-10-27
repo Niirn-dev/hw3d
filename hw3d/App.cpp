@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include "Surface.h"
+#include "Sheet.h"
 #include "GDIPlusManager.h"
 
 GDIPlusManager gdipm;
@@ -15,13 +16,13 @@ App::App( std::optional<int> wndWidth,std::optional<int> wndHeight,std::optional
     :
     wnd( Window{ wndWidth.value_or( wndWidthDefault ),wndHeight.value_or( wndHeightDefault ),wndName.value_or( "HW3D Window" ).c_str() } )
 {
-	/*std::mt19937 rng{ std::random_device{}() };
+	std::mt19937 rng{ std::random_device{}() };
 	std::uniform_real_distribution<float> rDist( 0.0f,20.0f );
 	std::uniform_real_distribution<float> aDist( 0.0f,3.1415f * 2.0f );
 	std::uniform_real_distribution<float> sDist( 0.0f,3.1415f * 0.3f );
 	std::uniform_real_distribution<float> distortionDist( 0.8f,1.6f );
 	std::uniform_int_distribution<int> divDist( 4,48 );
-	std::uniform_int_distribution<int> shapeDist( 1,3 );
+	std::uniform_int_distribution<int> shapeDist( 0,3 );
 
 	std::generate_n(
 		std::back_inserter( drawables ),
@@ -30,21 +31,21 @@ App::App( std::optional<int> wndWidth,std::optional<int> wndHeight,std::optional
 		{
 			switch ( shapeDist( rng ) )
 			{
-			case 1:
+			case 0:
 				return std::make_unique<Box>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
-			case 2:
+			case 1:
 				return std::make_unique<Pyramid>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
-			case 3:
+			case 2:
 				return std::make_unique<Spheroid>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist,divDist );
+			case 3:
+				return std::make_unique<Sheet>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
 			default:
 				assert( "Wrong shape type" && false );
 				return std::make_unique<Box>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
 			}
-		} );*/
+		} );
 
 	wnd.Gfx().SetProjection( DirectX::XMMatrixPerspectiveLH( 1.0f,3.0f / 4.0f,0.5f,40.0f ) );
-
-	const auto s = Surface::FromFile( "Images\\that-guy.png" );
 }
 
 App::~App()

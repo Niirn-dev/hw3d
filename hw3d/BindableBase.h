@@ -8,3 +8,5 @@
 #include "VertexShader.h"
 #include "Topology.h"
 #include "TransformCBuf.h"
+#include "Texture.h"
+#include "Sampler.h"
