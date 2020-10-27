@@ -4,6 +4,8 @@
 #define _WIN32_WINNT 0x0601
 #include <sdkddkver.h>
 
+// define FULL_WINTARD to enable all of the windows api stuff, used by gdi+
+#ifndef FULL_WINTARD
 // disable a bunch of unused windows stuff
 #define WIN32_LEAN_AND_MEAN
 #define NOGDICAPMASKS
@@ -22,7 +24,6 @@
 #define NONLS
 #define NOMEMMGR
 #define NOMETAFILE
-#define NOMINMAX
 #define NOOPENFILE
 #define NOSCROLL
 #define NOSERVICE
@@ -39,6 +40,9 @@
 #define NOPROXYSTUB
 #define NOIMAGE
 #define NOTAPE
+#endif
+// disable min and max macros regardless and just workaournd it for gdi+
+#define NOMINMAX
 
 #define STRICT
 

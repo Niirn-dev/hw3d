@@ -6,6 +6,10 @@
 #include <random>
 #include <algorithm>
 #include <iterator>
+#include "Surface.h"
+#include "GDIPlusManager.h"
+
+GDIPlusManager gdipm;
 
 App::App( std::optional<int> wndWidth,std::optional<int> wndHeight,std::optional<std::string> wndName )
     :
@@ -39,6 +43,8 @@ App::App( std::optional<int> wndWidth,std::optional<int> wndHeight,std::optional
 		} );*/
 
 	wnd.Gfx().SetProjection( DirectX::XMMatrixPerspectiveLH( 1.0f,3.0f / 4.0f,0.5f,40.0f ) );
+
+	const auto s = Surface::FromFile( "Images\\that-guy.png" );
 }
 
 App::~App()
