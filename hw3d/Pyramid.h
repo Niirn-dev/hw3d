@@ -31,5 +31,5 @@ private:
 	float dphi = 0.0f;
 	float dchi = 0.0f;
 	// model tranform
-	DirectX::XMFLOAT3X3 mt;
+	DirectX::XMFLOAT3X3 mt = {};
 };

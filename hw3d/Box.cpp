@@ -34,11 +34,11 @@ Box::Box( Graphics& gfx,
 		auto itlist = Cube::Make<Vertex>();
 		AddStaticBind( std::make_unique<VertexBuffer>( gfx,itlist.vertices ) );
 
-		auto pvs = std::make_unique<VertexShader>( gfx,L"VertexShader.cso" );
+		auto pvs = std::make_unique<VertexShader>( gfx,L"SolidVS.cso" );
 		auto pvsbc = pvs->GetBytecode();
 		AddStaticBind( std::move( pvs ) );
 
-		AddStaticBind( std::make_unique<PixelShader>( gfx,L"PixelShader.cso" ) );
+		AddStaticBind( std::make_unique<PixelShader>( gfx,L"SolidPS.cso" ) );
 
 		AddStaticIndexBuffer( std::make_unique<IndexBuffer>( gfx,itlist.indices) );
 
@@ -65,7 +65,7 @@ Box::Box( Graphics& gfx,
 		AddStaticBind( std::make_unique<PixelConstantBuffer<ColorBuffer>>( gfx,colors ) );
 
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied = {
-			{ "POSITION",0u,DXGI_FORMAT_R32G32B32_FLOAT,0u,0u,D3D11_INPUT_PER_VERTEX_DATA,0u },
+			{ "Position",0u,DXGI_FORMAT_R32G32B32_FLOAT,0u,0u,D3D11_INPUT_PER_VERTEX_DATA,0u },
 		};
 		AddStaticBind( std::make_unique<InputLayout>( gfx,ied,pvsbc ) );
 

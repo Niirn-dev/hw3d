@@ -28,43 +28,34 @@ Pyramid::Pyramid( Graphics& gfx,
 		struct Vertex
 		{
 			DirectX::XMFLOAT3 pos;
+			struct
+			{
+				unsigned char r;
+				unsigned char g;
+				unsigned char b;
+				unsigned char a;
+			} c;
 		};
+		auto model = Cone::MakeTesselated<Vertex>( 4 );
+		model.vertices[0].c = { 255,0,0,255 };
+		model.vertices[1].c = { 255,255,0,255 };
+		model.vertices[2].c = { 255,0,255,255 };
+		model.vertices[3].c = { 0,255,255,255 };
+		model.vertices[4].c = { 255,255,255,255 };
 
-		auto itlist = Cone::MakeTesselated<Vertex>( 4 );
-		AddStaticBind( std::make_unique<VertexBuffer>( gfx,itlist.vertices ) );
+		AddStaticBind( std::make_unique<VertexBuffer>( gfx,model.vertices ) );
 
-		auto pvs = std::make_unique<VertexShader>( gfx,L"VertexShader.cso" );
+		auto pvs = std::make_unique<VertexShader>( gfx,L"BlendVS.cso" );
 		auto pvsbc = pvs->GetBytecode();
 		AddStaticBind( std::move( pvs ) );
 
-		AddStaticBind( std::make_unique<PixelShader>( gfx,L"PixelShader.cso" ) );
+		AddStaticBind( std::make_unique<PixelShader>( gfx,L"BlendPS.cso" ) );
 
-		AddStaticIndexBuffer( std::make_unique<IndexBuffer>( gfx,itlist.indices ) );
-
-		struct ColorBuffer
-		{
-			struct
-			{
-				float r;
-				float g;
-				float b;
-				float a;
-			} face_colors[6];
-		};
-		const ColorBuffer colors = {
-			{
-				{ 1.0f,0.0f,0.0f,1.0f },
-				{ 0.0f,1.0f,0.0f,1.0f },
-				{ 1.0f,0.0f,1.0f,1.0f },
-				{ 0.0f,0.0f,1.0f,1.0f },
-				{ 0.0f,1.0f,1.0f,1.0f },
-				{ 1.0f,1.0f,1.0f,1.0f },
-			}
-		};
-		AddStaticBind( std::make_unique<PixelConstantBuffer<ColorBuffer>>( gfx,colors ) );
+		AddStaticIndexBuffer( std::make_unique<IndexBuffer>( gfx,model.indices ) );
 
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied = {
-			{ "POSITION",0u,DXGI_FORMAT_R32G32B32_FLOAT,0u,0u,D3D11_INPUT_PER_VERTEX_DATA,0u },
+			{ "Position",0u,DXGI_FORMAT_R32G32B32_FLOAT,0u,0u,D3D11_INPUT_PER_VERTEX_DATA,0u },
+			{ "Color",0u,DXGI_FORMAT_R8G8B8A8_UNORM,0u,sizeof( Vertex::pos ),D3D11_INPUT_PER_VERTEX_DATA,0u },
 		};
 		AddStaticBind( std::make_unique<InputLayout>( gfx,ied,pvsbc ) );
 

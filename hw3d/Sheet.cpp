@@ -57,7 +57,7 @@ Sheet::Sheet( Graphics& gfx,
 
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied = {
 			{ "Position",0u,DXGI_FORMAT_R32G32B32_FLOAT,0u,0u,D3D11_INPUT_PER_VERTEX_DATA,0u },
-			{ "TexCoord",0u,DXGI_FORMAT_R32G32_FLOAT,0u,12u,D3D11_INPUT_PER_VERTEX_DATA,0u },
+			{ "TexCoord",0u,DXGI_FORMAT_R32G32_FLOAT,0u,sizeof( Vertex::pos ),D3D11_INPUT_PER_VERTEX_DATA,0u },
 		};
 		AddStaticBind( std::make_unique<InputLayout>( gfx,ied,pvsbc ) );
 
