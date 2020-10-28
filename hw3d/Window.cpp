@@ -2,6 +2,7 @@
 #include "resource.h"
 #include <sstream>
 #include "WindowThrowMacros.h"
+#include "imgui/imgui_impl_win32.h"
 
 // create wndClass instance
 Window::WindowClass Window::WindowClass::wndClass;
@@ -71,12 +72,15 @@ Window::Window( int width,int height,const char* name )
 	}
 	// window is set to hidden upon creation
 	ShowWindow( hWnd,SW_SHOWDEFAULT );
+	// init win32 implementation for ImGui
+	ImGui_ImplWin32_Init( hWnd );
 	// initialize graphics
 	pGfx = std::make_unique<Graphics>( hWnd );
 }
 
 Window::~Window()
 {
+	ImGui_ImplWin32_Shutdown();
 	DestroyWindow( hWnd );
 }
 
@@ -133,6 +137,15 @@ LRESULT Window::HandleMsgThunk( _In_ HWND hWnd,_In_ UINT msg,_In_ WPARAM wParam,
 
 LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_In_ LPARAM lParam ) noexcept
 {
+	// let ImGui process window messages
+	if ( ImGui_ImplWin32_WndProcHandler( hWnd_in,msg,wParam,lParam ) )
+	{
+		// ImGui_ImplWin32_WndProcHandler returns true if all messages were handled
+		return true;
+	}
+
+	auto& imguiIO = ImGui::GetIO();
+
 	// do custom message handling
 	switch ( msg )
 	{
@@ -144,6 +157,12 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 	case WM_SYSKEYDOWN:
 		[[fallthrough]];
 	case WM_KEYDOWN:
+		// don't pass keyboard input to the application if imgui wants to use it
+		if ( imguiIO.WantCaptureKeyboard )
+		{
+			return true;
+		}
+
 		if ( !( lParam & 0x40000000 ) || kbd.AutorepeatIsEnabled() )
 		{
 			kbd.OnKeyPressed( static_cast<unsigned char>( wParam ) );
@@ -152,6 +171,12 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 	case WM_SYSKEYUP:
 		[[fallthrough]];
 	case WM_KEYUP:
+		// don't pass keyboard input to the application if imgui wants to use it
+		if ( imguiIO.WantCaptureKeyboard )
+		{
+			return true;
+		}
+
 		kbd.OnKeyReleased( static_cast<unsigned char>( wParam ) );
 		break;
 	case WM_CHAR:
@@ -165,18 +190,36 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 	/************** MOUSE MESSAGES ***************/
 	case WM_LBUTTONDOWN:
 	{
+		// don't pass mouse input to the application if imgui wants to use it
+		if ( imguiIO.WantCaptureMouse )
+		{
+			return true;
+		}
+
 		const auto p = MAKEPOINTS( lParam );
 		mouse.OnLeftPress( p.x,p.y );
 	}
 		break;
 	case WM_RBUTTONDOWN:
 	{
+		// don't pass mouse input to the application if imgui wants to use it
+		if ( imguiIO.WantCaptureMouse )
+		{
+			return true;
+		}
+
 		const auto p = MAKEPOINTS( lParam );
 		mouse.OnRightPress( p.x,p.y );
 	}
 	break;
 	case WM_LBUTTONUP:
 	{
+		// don't pass mouse input to the application if imgui wants to use it
+		if ( imguiIO.WantCaptureMouse )
+		{
+			return true;
+		}
+
 		const auto p = MAKEPOINTS( lParam );
 		mouse.OnLeftRelease( p.x,p.y );
 		// release mouse capture if not in the client region
@@ -189,6 +232,12 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 		break;
 	case WM_RBUTTONUP:
 	{
+		// don't pass mouse input to the application if imgui wants to use it
+		if ( imguiIO.WantCaptureMouse )
+		{
+			return true;
+		}
+
 		const auto p = MAKEPOINTS( lParam );
 		mouse.OnRightRelease( p.x,p.y );
 		// release mouse capture if not in the client region
@@ -201,12 +250,24 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 		break;
 	case WM_MOUSEWHEEL:
 	{
+		// don't pass mouse input to the application if imgui wants to use it
+		if ( imguiIO.WantCaptureMouse )
+		{
+			return true;
+		}
+
 		const auto delta = GET_WHEEL_DELTA_WPARAM( wParam );
 		mouse.OnWheelDelta( delta );
 	}
 		break;
 	case WM_MOUSEMOVE:
 	{
+		// don't pass mouse input to the application if imgui wants to use it
+		if ( imguiIO.WantCaptureMouse )
+		{
+			return true;
+		}
+
 		const auto p = MAKEPOINTS( lParam );
 		// in client region -> log move and log capture/mouse enter if wasn't in the window before
 		if ( IsInClientRegion( p.x,p.y ) )

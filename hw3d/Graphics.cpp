@@ -2,6 +2,7 @@
 #include "dxerr.h"
 #include <sstream>
 #include "GraphicsThrowMacros.h"
+#include "imgui\imgui_impl_dx11.h"
 
 #pragma comment( lib,"d3d11.lib" )
 
@@ -97,6 +98,14 @@ Graphics::Graphics( HWND hWnd )
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
 	pContext->RSSetViewports( 1u,&vp );
+
+	// init dx11 implementation for ImGui
+	ImGui_ImplDX11_Init( pDevice.Get(),pContext.Get() );
+}
+
+Graphics::~Graphics()
+{
+	ImGui_ImplDX11_Shutdown();
 }
 
 void Graphics::SetProjection( DirectX::XMMATRIX proj ) noexcept

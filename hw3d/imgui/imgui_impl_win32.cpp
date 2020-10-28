@@ -16,10 +16,10 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
-#include <windows.h>
 #include <tchar.h>
 
 // Using XInput library for gamepad (with recent Windows SDK this may leads to executables which won't run on Windows 7)
+#define IMGUI_IMPL_WIN32_DISABLE_GAMEPAD
 #ifndef IMGUI_IMPL_WIN32_DISABLE_GAMEPAD
 #include <XInput.h>
 #else
@@ -65,7 +65,7 @@ static bool                 g_HasGamepad = false;
 static bool                 g_WantUpdateHasGamepad = true;
 
 // Functions
-bool    ImGui_ImplWin32_Init(void* hwnd)
+bool    ImGui_ImplWin32_Init(HWND hwnd)
 {
     if (!::QueryPerformanceFrequency((LARGE_INTEGER*)&g_TicksPerSecond))
         return false;
@@ -73,7 +73,7 @@ bool    ImGui_ImplWin32_Init(void* hwnd)
         return false;
 
     // Setup backend capabilities flags
-    g_hWnd = (HWND)hwnd;
+    g_hWnd = hwnd;
     ImGuiIO& io = ImGui::GetIO();
     io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;         // We can honor GetMouseCursor() values (optional)
     io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;          // We can honor io.WantSetMousePos requests (optional, rarely used)

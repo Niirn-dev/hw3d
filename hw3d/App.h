@@ -4,6 +4,7 @@
 #include <optional>
 #include <string>
 #include "ChiliTimer.h"
+#include "ImguiManager.h"
 
 class App
 {
@@ -22,8 +23,10 @@ private:
 	static constexpr int wndWidthDefault = 800;
 	static constexpr int wndHeightDefault = 600;
 
+	ImguiManager imgui;
 	Window wnd;
 	ChiliTimer timer;
 	std::vector<std::unique_ptr<class Drawable>> drawables;
+	bool show_demo_window = true;
 };
 
