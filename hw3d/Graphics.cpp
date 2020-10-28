@@ -2,6 +2,7 @@
 #include "dxerr.h"
 #include <sstream>
 #include "GraphicsThrowMacros.h"
+#include "imgui\imgui_impl_win32.h"
 #include "imgui\imgui_impl_dx11.h"
 
 #pragma comment( lib,"d3d11.lib" )
@@ -122,11 +123,36 @@ void Graphics::DrawIndexed( UINT count ) noexcept( !IS_DEBUG )
 	GFX_THROW_ONLYINFO( pContext->DrawIndexed( count,0u,0 ) );
 }
 
+void Graphics::BeginFrame( float r,float g,float b ) noexcept
+{
+	if ( IsImguiEnabled() )
+	{
+		// begin imgui frame
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+	}
+
+	const float color[] = { r,g,b,1.0f };
+	pContext->ClearRenderTargetView(
+		pTarget.Get(),
+		color
+	);
+	pContext->ClearDepthStencilView( pDSV.Get(),D3D11_CLEAR_DEPTH,1.0f,0u );
+}
+
 void Graphics::EndFrame()
 {
 #ifndef NDEBUG
 	infoManager.Set();
 #endif // !NDEBUG
+
+	if ( IsImguiEnabled() )
+	{
+		// render ingui frame
+		ImGui::Render();
+		ImGui_ImplDX11_RenderDrawData( ImGui::GetDrawData() );
+	}
 
 	if ( HRESULT hr; FAILED( hr = pSwap->Present( 1u,0u ) ) )
 	{
@@ -141,14 +167,19 @@ void Graphics::EndFrame()
 	}
 }
 
-void Graphics::ClearBuffer( float r,float g,float b ) noexcept
+void Graphics::EnableImgui() noexcept
 {
-	const float color[] = { r,g,b,1.0f };
-	pContext->ClearRenderTargetView(
-		pTarget.Get(),
-		color
-	);
-	pContext->ClearDepthStencilView( pDSV.Get(),D3D11_CLEAR_DEPTH,1.0f,0u );
+	imguiEnabled = true;
+}
+
+void Graphics::DisableImgui() noexcept
+{
+	imguiEnabled = false;
+}
+
+bool Graphics::IsImguiEnabled() const noexcept
+{
+	return imguiEnabled;
 }
 
 /*********** EXCEPTION DIFINITIONS ***********/

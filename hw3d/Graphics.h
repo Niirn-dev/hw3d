@@ -62,8 +62,14 @@ private:
 
 public:
 	void DrawIndexed( UINT count ) noexcept( !IS_DEBUG );
+	void BeginFrame( float r,float g,float b ) noexcept;
 	void EndFrame();
-	void ClearBuffer( float r,float g,float b ) noexcept;
+
+	void EnableImgui() noexcept;
+	void DisableImgui() noexcept;
+	bool IsImguiEnabled() const noexcept;
+private:
+	bool imguiEnabled = true;
 private:
 #ifndef NDEBUG
 	DxgiInfoManager infoManager;

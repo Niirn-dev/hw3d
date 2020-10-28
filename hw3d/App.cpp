@@ -72,7 +72,7 @@ int App::Go()
 void App::DoFrame()
 {
 	const float dt = timer.Mark();
-	wnd.Gfx().ClearBuffer( 0.07f,0.0f,0.12f );
+	wnd.Gfx().BeginFrame( 0.07f,0.0f,0.12f );
 	for ( auto& d : drawables )
 	{
 		d->Update( dt );
@@ -82,23 +82,23 @@ void App::DoFrame()
 	while ( !wnd.kbd.KeyIsEmpty() )
 	{
 		const auto& e = wnd.kbd.ReadKey();
-		if ( e->IsPress() && e->GetCode() == VK_SPACE )
+		if ( e->GetCode() == VK_SPACE )
 		{
-			show_demo_window = !show_demo_window;
+			if ( e->IsPress() )
+			{
+				wnd.Gfx().DisableImgui();
+			}
+			else if ( e->IsRelease() )
+			{
+				wnd.Gfx().EnableImgui();
+			}
 		}
 	}
-
-	// draw the imgui test
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
 
 	if ( show_demo_window )
 	{
 		ImGui::ShowDemoWindow( &show_demo_window );
 	}
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData( ImGui::GetDrawData() );
 
 	wnd.Gfx().EndFrame();
 }
