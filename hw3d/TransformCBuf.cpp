@@ -12,7 +12,7 @@ TransformCBuf::TransformCBuf( Graphics& gfx,const Drawable& parent )
 
 void TransformCBuf::Bind( Graphics& gfx ) noexcept
 {
-	auto transform = parent.GetTransformXM() * gfx.GetProjection();
+	auto transform = parent.GetTransformXM() * gfx.GetView() * gfx.GetProjection();
 	vcbuf->Update( gfx,DirectX::XMMatrixTranspose( transform ) );
 	vcbuf->Bind( gfx );
 }

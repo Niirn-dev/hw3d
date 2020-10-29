@@ -73,6 +73,8 @@ void App::DoFrame()
 {
 	const float dt = timer.Mark();
 	wnd.Gfx().BeginFrame( 0.07f,0.0f,0.12f );
+	wnd.Gfx().SetView( cam.GetTranformXM() );
+
 	for ( auto& d : drawables )
 	{
 		d->Update( dt );
@@ -95,10 +97,7 @@ void App::DoFrame()
 		}
 	}
 
-	if ( show_demo_window )
-	{
-		ImGui::ShowDemoWindow( &show_demo_window );
-	}
+	cam.SpawnControlWindow();
 
 	wnd.Gfx().EndFrame();
 }

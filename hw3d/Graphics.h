@@ -61,6 +61,12 @@ private:
 	DirectX::XMMATRIX projection = DirectX::XMMatrixIdentity();
 
 public:
+	void SetView( DirectX::XMMATRIX view_in ) noexcept;
+	DirectX::XMMATRIX GetView() const noexcept;
+private:
+	DirectX::XMMATRIX view = DirectX::XMMatrixIdentity();
+
+public:
 	void DrawIndexed( UINT count ) noexcept( !IS_DEBUG );
 	void BeginFrame( float r,float g,float b ) noexcept;
 	void EndFrame();

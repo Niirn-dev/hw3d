@@ -5,6 +5,7 @@
 #include <string>
 #include "ChiliTimer.h"
 #include "ImguiManager.h"
+#include "Camera.h"
 
 class App
 {
@@ -26,7 +27,7 @@ private:
 	ImguiManager imgui;
 	Window wnd;
 	ChiliTimer timer;
+	Camera cam;
 	std::vector<std::unique_ptr<class Drawable>> drawables;
-	bool show_demo_window = true;
 };
 

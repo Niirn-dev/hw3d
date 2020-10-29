@@ -118,6 +118,16 @@ DirectX::XMMATRIX Graphics::GetProjection() const noexcept
 	return projection;
 }
 
+void Graphics::SetView( DirectX::XMMATRIX view_in ) noexcept
+{
+	view = view_in;
+}
+
+DirectX::XMMATRIX Graphics::GetView() const noexcept
+{
+	return view;
+}
+
 void Graphics::DrawIndexed( UINT count ) noexcept( !IS_DEBUG )
 {
 	GFX_THROW_ONLYINFO( pContext->DrawIndexed( count,0u,0 ) );
