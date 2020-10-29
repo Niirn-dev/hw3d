@@ -27,6 +27,11 @@ void Camera::SpawnControlWindow() noexcept
 		ImGui::SliderAngle( "Pitch",&pitch,-90.0f,90.0f );
 		ImGui::SliderAngle( "Yaw",&yaw,-180.0f,180.0f );
 		ImGui::SliderAngle( "Roll",&roll,-45.0f,45.0f );
+
+		if ( ImGui::Button( "Reset" ) )
+		{
+			Reset();
+		}
 	}
 	ImGui::End();
 }
