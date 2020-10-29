@@ -11,19 +11,7 @@ SkinnedBox::SkinnedBox( Graphics& gfx,
 	std::uniform_real_distribution<float>& speedDist,
 	std::uniform_real_distribution<float>& distortionDist )
 	:
-	r( rDist( rng ) ),
-	roll( angleDist( rng ) ),
-	pitch( angleDist( rng ) ),
-	yaw( angleDist( rng ) ),
-	theta( angleDist( rng ) ),
-	phi( angleDist( rng ) ),
-	chi( angleDist( rng ) ),
-	droll( speedDist( rng ) ),
-	dpitch( speedDist( rng ) ),
-	dyaw( speedDist( rng ) ),
-	dtheta( speedDist( rng ) ),
-	dphi( speedDist( rng ) ),
-	dchi( speedDist( rng ) )
+	DrawableTest( gfx,rng,rDist,angleDist,speedDist,distortionDist )
 {
 	if ( !IsStaticInitialized() )
 	{
@@ -64,27 +52,5 @@ SkinnedBox::SkinnedBox( Graphics& gfx,
 	}
 
 	AddBind( std::make_unique<TransformCBuf>( gfx,*this ) );
-	DirectX::XMStoreFloat3x3(
-		&mt,
-		DirectX::XMMatrixScaling( 1.0f,1.0f,distortionDist( rng ) )
-	);
-}
-
-void SkinnedBox::Update( float dt ) noexcept
-{
-	roll += droll * dt;
-	pitch += dpitch * dt;
-	yaw += dyaw * dt;
-	theta += dtheta * dt;
-	phi += dphi * dt;
-	chi += dchi * dt;
-}
-
-DirectX::XMMATRIX SkinnedBox::GetTransformXM() const noexcept
-{
-	return DirectX::XMLoadFloat3x3( &mt ) *
-		DirectX::XMMatrixRotationRollPitchYaw( pitch,yaw,roll ) *
-		DirectX::XMMatrixTranslation( r,0.0f,0.0f ) *
-		DirectX::XMMatrixRotationRollPitchYaw( theta,phi,chi );
 }
 

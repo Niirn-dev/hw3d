@@ -228,6 +228,7 @@
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Spheroid.h" />
     <ClInclude Include="Surface.h" />
+    <ClInclude Include="DrawableTest.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Topology.h" />
     <ClInclude Include="TransformCBuf.h" />

@@ -21,7 +21,7 @@ App::App( std::optional<int> wndWidth,std::optional<int> wndHeight,std::optional
     wnd( Window{ wndWidth.value_or( wndWidthDefault ),wndHeight.value_or( wndHeightDefault ),wndName.value_or( "HW3D Window" ).c_str() } )
 {
 	std::mt19937 rng{ std::random_device{}() };
-	std::uniform_real_distribution<float> rDist( 0.0f,20.0f );
+	std::uniform_real_distribution<float> rDist( 5.0f,25.0f );
 	std::uniform_real_distribution<float> aDist( 0.0f,3.1415f * 2.0f );
 	std::uniform_real_distribution<float> sDist( 0.0f,3.1415f * 0.3f );
 	std::uniform_real_distribution<float> distortionDist( 0.8f,1.6f );
@@ -51,7 +51,7 @@ App::App( std::optional<int> wndWidth,std::optional<int> wndHeight,std::optional
 			}
 		} );
 
-	wnd.Gfx().SetProjection( DirectX::XMMatrixPerspectiveLH( 1.0f,3.0f / 4.0f,0.5f,40.0f ) );
+	wnd.Gfx().SetProjection( DirectX::XMMatrixPerspectiveLH( 1.0f,3.0f / 4.0f,0.5f,60.0f ) );
 }
 
 App::~App()

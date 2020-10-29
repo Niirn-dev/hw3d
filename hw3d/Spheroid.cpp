@@ -10,19 +10,7 @@ Spheroid::Spheroid( Graphics& gfx,
 	std::uniform_real_distribution<float>& distortionDist,
 	std::uniform_int_distribution<int>& divDist )
 	:
-	r( rDist( rng ) ),
-	roll( angleDist( rng ) ),
-	pitch( angleDist( rng ) ),
-	yaw( angleDist( rng ) ),
-	theta( angleDist( rng ) ),
-	phi( angleDist( rng ) ),
-	chi( angleDist( rng ) ),
-	droll( speedDist( rng ) ),
-	dpitch( speedDist( rng ) ),
-	dyaw( speedDist( rng ) ),
-	dtheta( speedDist( rng ) ),
-	dphi( speedDist( rng ) ),
-	dchi( speedDist( rng ) )
+	DrawableTest( gfx,rng,rDist,angleDist,speedDist,distortionDist )
 {
 	struct Vertex
 	{
@@ -72,26 +60,4 @@ Spheroid::Spheroid( Graphics& gfx,
 	}
 
 	AddBind( std::make_unique<TransformCBuf>( gfx,*this ) );
-	DirectX::XMStoreFloat3x3(
-		&mt,
-		DirectX::XMMatrixScaling( 1.0f,1.0f,distortionDist( rng ) )
-	);
-}
-
-void Spheroid::Update( float dt ) noexcept
-{
-    roll += droll * dt;
-    pitch += dpitch * dt;
-    yaw += dyaw * dt;
-    theta += dtheta * dt;
-    phi += dphi * dt;
-    chi += dchi * dt;
-}
-
-DirectX::XMMATRIX Spheroid::GetTransformXM() const noexcept
-{
-	return DirectX::XMLoadFloat3x3( &mt ) *
-		DirectX::XMMatrixRotationRollPitchYaw( pitch,yaw,roll ) *
-		DirectX::XMMatrixTranslation( r,0.0f,0.0f ) *
-		DirectX::XMMatrixRotationRollPitchYaw( theta,phi,chi );
 }
