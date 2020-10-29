@@ -77,20 +77,20 @@ void App::DoFrame()
 
 	for ( auto& d : drawables )
 	{
-		d->Update( dt );
+		d->Update( wnd.kbd.KeyIsPressed( VK_SPACE ) ? 0.0f : dt );
 		d->Draw( wnd.Gfx() );
 	}
 
 	while ( !wnd.kbd.KeyIsEmpty() )
 	{
 		const auto& e = wnd.kbd.ReadKey();
-		if ( e->GetCode() == VK_SPACE )
+		if ( e->IsPress() && e->GetCode() == 'I' )
 		{
-			if ( e->IsPress() )
+			if ( wnd.Gfx().IsImguiEnabled() )
 			{
 				wnd.Gfx().DisableImgui();
 			}
-			else if ( e->IsRelease() )
+			else
 			{
 				wnd.Gfx().EnableImgui();
 			}
@@ -100,6 +100,8 @@ void App::DoFrame()
 	if ( ImGui::Begin( "Simulation speed control" ) )
 	{
 		ImGui::SliderFloat( "Factor",&simulationSpeedFactor,0.2f,4.0f,"%.1f" );
+		ImGui::Text( "Simulation framerate: %.1f",ImGui::GetIO().Framerate );
+		ImGui::Text( wnd.kbd.KeyIsPressed( VK_SPACE ) ? "PAUSED" : "RUNNING (Hold space bar to pause)" );
 	}
 	ImGui::End();
 
