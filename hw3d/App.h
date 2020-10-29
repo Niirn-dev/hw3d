@@ -30,6 +30,12 @@ private:
 	Camera cam;
 	std::vector<std::unique_ptr<class Drawable>> drawables;
 
+	struct
+	{
+		float r = 0.07f;
+		float g = 0.0f;
+		float b = 0.12f;
+	} bkgColor;
 	float simulationSpeedFactor = 1.0f;
 };
 

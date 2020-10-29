@@ -72,7 +72,7 @@ int App::Go()
 void App::DoFrame()
 {
 	const float dt = timer.Mark() * simulationSpeedFactor;
-	wnd.Gfx().BeginFrame( 0.07f,0.0f,0.12f );
+	wnd.Gfx().BeginFrame( bkgColor.r,bkgColor.g,bkgColor.b );
 	wnd.Gfx().SetView( cam.GetTranformXM() );
 
 	for ( auto& d : drawables )
@@ -97,8 +97,9 @@ void App::DoFrame()
 		}
 	}
 
-	if ( ImGui::Begin( "Simulation speed control" ) )
+	if ( ImGui::Begin( "Simulation control" ) )
 	{
+		ImGui::ColorEdit3( "Background",&bkgColor.r );
 		ImGui::SliderFloat( "Factor",&simulationSpeedFactor,0.2f,4.0f,"%.1f" );
 		ImGui::Text( "Simulation framerate: %.1f",ImGui::GetIO().Framerate );
 		ImGui::Text( wnd.kbd.KeyIsPressed( VK_SPACE ) ? "PAUSED" : "RUNNING (Hold space bar to pause)" );
