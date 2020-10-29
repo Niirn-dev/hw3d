@@ -29,5 +29,7 @@ private:
 	ChiliTimer timer;
 	Camera cam;
 	std::vector<std::unique_ptr<class Drawable>> drawables;
+
+	float simulationSpeedFactor = 1.0f;
 };
 

@@ -71,7 +71,7 @@ int App::Go()
 
 void App::DoFrame()
 {
-	const float dt = timer.Mark();
+	const float dt = timer.Mark() * simulationSpeedFactor;
 	wnd.Gfx().BeginFrame( 0.07f,0.0f,0.12f );
 	wnd.Gfx().SetView( cam.GetTranformXM() );
 
@@ -96,6 +96,12 @@ void App::DoFrame()
 			}
 		}
 	}
+
+	if ( ImGui::Begin( "Simulation speed control" ) )
+	{
+		ImGui::SliderFloat( "Factor",&simulationSpeedFactor,0.2f,4.0f,"%.1f" );
+	}
+	ImGui::End();
 
 	cam.SpawnControlWindow();
 
