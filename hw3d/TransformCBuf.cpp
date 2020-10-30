@@ -6,15 +6,19 @@ TransformCBuf::TransformCBuf( Graphics& gfx,const Drawable& parent )
 {
 	if ( !vcbuf )
 	{
-		vcbuf = std::make_unique<VertexConstantBuffer<DirectX::XMMATRIX>>( gfx );
+		vcbuf = std::make_unique<VertexConstantBuffer<Transforms>>( gfx );
 	}
 }
 
 void TransformCBuf::Bind( Graphics& gfx ) noexcept
 {
-	auto transform = parent.GetTransformXM() * gfx.GetView() * gfx.GetProjection();
-	vcbuf->Update( gfx,DirectX::XMMatrixTranspose( transform ) );
+	const auto worldView = parent.GetTransformXM();
+	Transforms transform = {
+		DirectX::XMMatrixTranspose( worldView ),
+		DirectX::XMMatrixTranspose( worldView * gfx.GetView() * gfx.GetProjection() )
+	};
+	vcbuf->Update( gfx,transform );
 	vcbuf->Bind( gfx );
 }
 
-std::unique_ptr<VertexConstantBuffer<DirectX::XMMATRIX>> TransformCBuf::vcbuf;
+std::unique_ptr<VertexConstantBuffer<TransformCBuf::Transforms>> TransformCBuf::vcbuf;

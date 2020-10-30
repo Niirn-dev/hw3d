@@ -1,9 +1,9 @@
 cbuffer CBuff
 {
-	float4 color[6];
+	float4 color;
 };
 
-float4 main( uint id : SV_PrimitiveID ) : SV_TARGET
+float4 main() : SV_TARGET
 {
-	return float4( color[id / 2 % 6] );
+	return color;
 }

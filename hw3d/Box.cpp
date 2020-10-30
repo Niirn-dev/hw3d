@@ -17,43 +17,30 @@ Box::Box( Graphics& gfx,
 		struct Vertex
 		{
 			DirectX::XMFLOAT3 pos;
+			DirectX::XMFLOAT3 n;
 		};
 
-		auto itlist = Cube::Make<Vertex>();
-		AddStaticBind( std::make_unique<VertexBuffer>( gfx,itlist.vertices ) );
+		auto model = Cube::MakeIndependent<Vertex>();
+		model.SetNormalsIndependentFlat();
+		AddStaticBind( std::make_unique<VertexBuffer>( gfx,model.vertices ) );
 
-		auto pvs = std::make_unique<VertexShader>( gfx,L"SolidVS.cso" );
+		auto pvs = std::make_unique<VertexShader>( gfx,L"PhongVS.cso" );
 		auto pvsbc = pvs->GetBytecode();
 		AddStaticBind( std::move( pvs ) );
 
-		AddStaticBind( std::make_unique<PixelShader>( gfx,L"SolidPS.cso" ) );
+		AddStaticBind( std::make_unique<PixelShader>( gfx,L"PhongPS.cso" ) );
 
-		AddStaticIndexBuffer( std::make_unique<IndexBuffer>( gfx,itlist.indices) );
+		AddStaticIndexBuffer( std::make_unique<IndexBuffer>( gfx,model.indices) );
 
-		struct ColorBuffer
+		/*struct LightBuffer
 		{
-			struct
-			{
-				float r;
-				float g;
-				float b;
-				float a;
-			} face_colors[6];
+			DirectX::XMFLOAT3 pos;
 		};
-		const ColorBuffer colors = {
-			{
-				{ 1.0f,0.0f,0.0f,1.0f },
-				{ 0.0f,1.0f,0.0f,1.0f },
-				{ 1.0f,0.0f,1.0f,1.0f },
-				{ 0.0f,0.0f,1.0f,1.0f },
-				{ 0.0f,1.0f,1.0f,1.0f },
-				{ 1.0f,1.0f,1.0f,1.0f },
-			}
-		};
-		AddStaticBind( std::make_unique<PixelConstantBuffer<ColorBuffer>>( gfx,colors ) );
+		AddStaticBind( std::make_unique<PixelConstantBuffer<LightBuffer>>( gfx ) );*/
 
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied = {
 			{ "Position",0u,DXGI_FORMAT_R32G32B32_FLOAT,0u,0u,D3D11_INPUT_PER_VERTEX_DATA,0u },
+			{ "Normal",0u,DXGI_FORMAT_R32G32B32_FLOAT,0u,sizeof( Vertex::pos ),D3D11_INPUT_PER_VERTEX_DATA,0u },
 		};
 		AddStaticBind( std::make_unique<InputLayout>( gfx,ied,pvsbc ) );
 

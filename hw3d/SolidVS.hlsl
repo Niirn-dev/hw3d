@@ -1,9 +1,10 @@
 cbuffer cBuff
 {
-	matrix transformation;
+	matrix worldView;
+    matrix worldViewProj;
 };
 
 float4 main( float3 pos : Position ) : SV_Position
 {
-	return mul( float4( pos,1.0f ),transformation );
+	return mul( float4( pos,1.0f ),worldViewProj );
 }

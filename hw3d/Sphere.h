@@ -7,13 +7,12 @@ class Sphere
 {
 public:
 	template<class V>
-	static IndexedTriangleList<V> MakeTesselated( int latDiv,int longDiv ) noexcept( !IS_DEBUG )
+	static IndexedTriangleList<V> MakeTesselated( int latDiv,int longDiv,float radius = 1.0f ) noexcept( !IS_DEBUG )
 	{
 		namespace dx = DirectX;
 		assert( latDiv >= 3 );
 		assert( longDiv >= 3 );
 
-		constexpr float radius = 1.0f;
 		const auto base = dx::XMVectorSet( 0.0f,0.0f,radius,0.0f );
 		const float lattitudeAngle = PI / latDiv;
 		const float longitudeAngle = 2.0f * PI / longDiv;
@@ -93,8 +92,8 @@ public:
 		return{ std::move( vertices ),std::move( indices ) };
 	}
 	template<class V>
-	static IndexedTriangleList<V> Make() noexcept( !IS_DEBUG )
+	static IndexedTriangleList<V> Make( float radius = 1.0f ) noexcept( !IS_DEBUG )
 	{
-		return MakeTesselated<V>( 12,24 );
+		return MakeTesselated<V>( 12,24,radius );
 	}
 };
