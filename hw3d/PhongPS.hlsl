@@ -1,15 +1,25 @@
+cbuffer ModelCBuff
+{
+    float3 materialColor;
+};
+
 cbuffer LightCBuff
 {
     float3 lightPos;
+    float3 diffuseColor;
+    float3 ambient;
+    float diffuseIntensity;
+    float attConst;
+    float attLin;
+    float attQuad;
 };
 
-static const float3 materialColor = { 0.1f, 0.1f, 0.2f };
-static const float3 ambient = { 0.12f, 0.0f, 0.07f };
-static const float3 diffuseColor = { 1.0f, 1.0f, 1.0f };
-static const float diffuseIntensity = 1.0f;
-static const float attConst = 1.0f;
-static const float attLin = 0.22f;
-static const float attQuad = 0.2f;
+// static const float3 ambient = { 0.12f, 0.0f, 0.07f };
+// static const float3 diffuseColor = { 1.0f, 1.0f, 1.0f };
+// static const float diffuseIntensity = 1.0f;
+// static const float attConst = 1.0f;
+// static const float attLin = 0.22f;
+// static const float attQuad = 0.2f;
 
 float4 main( float3 worldPos : Position,float3 n : Normal ) : SV_Target
 {

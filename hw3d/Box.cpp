@@ -32,11 +32,12 @@ Box::Box( Graphics& gfx,
 
 		AddStaticIndexBuffer( std::make_unique<IndexBuffer>( gfx,model.indices) );
 
-		/*struct LightBuffer
+		struct ColorBuffer
 		{
-			DirectX::XMFLOAT3 pos;
-		};
-		AddStaticBind( std::make_unique<PixelConstantBuffer<LightBuffer>>( gfx ) );*/
+			DirectX::XMFLOAT3 pos = { 0.2f,0.2f,0.4f };
+			float padding;
+		} cBuff;
+		AddStaticBind( std::make_unique<PixelConstantBuffer<ColorBuffer>>( gfx,cBuff,0u ) );
 
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied = {
 			{ "Position",0u,DXGI_FORMAT_R32G32B32_FLOAT,0u,0u,D3D11_INPUT_PER_VERTEX_DATA,0u },
