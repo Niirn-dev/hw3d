@@ -34,8 +34,9 @@ Box::Box( Graphics& gfx,
 
 		struct ColorBuffer
 		{
-			DirectX::XMFLOAT3 pos = { 0.2f,0.2f,0.4f };
-			float padding;
+			alignas( 16 ) DirectX::XMFLOAT3 pos = { 0.2f,0.2f,0.4f };
+			float specIntensity = 1.0f;
+			float specPower = 100.0f;
 		} cBuff;
 		AddStaticBind( std::make_unique<PixelConstantBuffer<ColorBuffer>>( gfx,cBuff,0u ) );
 
