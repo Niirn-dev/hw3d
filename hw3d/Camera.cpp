@@ -4,7 +4,7 @@
 DirectX::XMMATRIX Camera::GetTranformXM() const noexcept
 {
 	const auto pos = DirectX::XMVector3Transform(
-		DirectX::XMVectorSet( 0.0f,0.0f,r,0.0f ),
+		DirectX::XMVectorSet( 0.0f,0.0f,-r,0.0f ),
 		DirectX::XMMatrixRotationRollPitchYaw( phi,-theta,0.0f )
 	);
 
