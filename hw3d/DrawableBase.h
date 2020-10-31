@@ -39,7 +39,7 @@ private:
 	{
 		return staticBinds;
 	}
-private:
+protected:
 	static std::vector<std::unique_ptr<Bindable>> staticBinds;
 };
 

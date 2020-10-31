@@ -26,6 +26,8 @@ void PointLight::Bind( Graphics& gfx ) noexcept
 void PointLight::Draw( Graphics& gfx ) const noexcept( !IS_DEBUG )
 {
 	mesh.SetPosition( pos );
+	mesh.SetColor( color );
+	mesh.UpdateCBuffer( gfx );
 	mesh.Draw( gfx );
 }
 
@@ -107,9 +109,9 @@ void PointLight::ResetPosition() noexcept
 
 void PointLight::ResetColors() noexcept
 {
-	color = { 0.0f,0.0f,0.0f };
+	color = { 1.0f,1.0f,1.0f };
 	intensity = 0.0f;
-	ambient = { 0.0f,0.0f,0.0f };
+	ambient = { 0.12f,0.0f,0.07f };
 }
 
 void PointLight::ResetAttenuation() noexcept

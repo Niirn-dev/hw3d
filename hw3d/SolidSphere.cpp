@@ -24,12 +24,7 @@ SolidSphere::SolidSphere( Graphics& gfx,float radius )
 
 		AddStaticBind( std::make_unique<PixelShader>( gfx,L"SolidPS.cso" ) );
 
-		struct ColorBuffer
-		{
-			DirectX::XMFLOAT3 c = { 1.0f,1.0f,1.0f };
-			float paddig;
-		} color;
-		AddStaticBind( std::make_unique<PixelConstantBuffer<ColorBuffer>>( gfx,color ) );
+		AddStaticBind( std::make_unique<PixelConstantBuffer<SphereCBuffer>>( gfx ) );
 
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied = {
 			{ "Position",0u,DXGI_FORMAT_R32G32B32_FLOAT,0u,0u,D3D11_INPUT_PER_VERTEX_DATA,0u },
@@ -49,6 +44,22 @@ SolidSphere::SolidSphere( Graphics& gfx,float radius )
 void SolidSphere::SetPosition( DirectX::XMFLOAT3 pos ) noexcept
 {
 	position = pos;
+}
+
+void SolidSphere::SetColor( DirectX::XMFLOAT3 c ) noexcept
+{
+	color = c;
+}
+
+void SolidSphere::UpdateCBuffer( Graphics& gfx ) noexcept
+{
+	for ( const auto& sb : DrawableBase<SolidSphere>::staticBinds )
+	{
+		if ( auto cb = dynamic_cast<PixelConstantBuffer<SphereCBuffer>*>( sb.get() ) )
+		{
+			cb->Update( gfx,SphereCBuffer{ color } );
+		}
+	}
 }
 
 void SolidSphere::Update( float ) noexcept
