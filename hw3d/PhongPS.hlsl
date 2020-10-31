@@ -5,7 +5,7 @@ cbuffer ModelCBuff
 
 cbuffer LightCBuff
 {
-    float3 lightPos;
+    float3 lightWorldViewPos;
     float3 diffuseColor;
     float3 ambient;
     float diffuseIntensity;
@@ -21,10 +21,10 @@ cbuffer LightCBuff
 // static const float attLin = 0.22f;
 // static const float attQuad = 0.2f;
 
-float4 main( float3 worldPos : Position,float3 n : Normal ) : SV_Target
+float4 main( float3 worldViewPos : Position,float3 n : Normal ) : SV_Target
 {
     // get direction and distance to light source
-    const float3 toL = lightPos - worldPos;
+    const float3 toL = lightWorldViewPos - worldViewPos;
     const float distToL = length(toL);
     const float3 dirToL = normalize(toL);
     // diffuse attenuation

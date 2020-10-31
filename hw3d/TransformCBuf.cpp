@@ -12,10 +12,10 @@ TransformCBuf::TransformCBuf( Graphics& gfx,const Drawable& parent )
 
 void TransformCBuf::Bind( Graphics& gfx ) noexcept
 {
-	const auto worldView = parent.GetTransformXM();
+	const auto worldView = parent.GetTransformXM() * gfx.GetView();
 	Transforms transform = {
 		DirectX::XMMatrixTranspose( worldView ),
-		DirectX::XMMatrixTranspose( worldView * gfx.GetView() * gfx.GetProjection() )
+		DirectX::XMMatrixTranspose( worldView * gfx.GetProjection() )
 	};
 	vcbuf->Update( gfx,transform );
 	vcbuf->Bind( gfx );

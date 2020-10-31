@@ -18,7 +18,7 @@ private:
 private:
 	struct PointLightCBuffer
 	{
-		alignas( 16 ) DirectX::XMFLOAT3 pos;
+		alignas( 16 ) DirectX::XMFLOAT3 worldViewPos;
 		alignas( 16 ) DirectX::XMFLOAT3 color;
 		alignas( 16 ) DirectX::XMFLOAT3 ambient;
 		float intensity;

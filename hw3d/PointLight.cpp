@@ -10,8 +10,12 @@ PointLight::PointLight( Graphics& gfx )
 
 void PointLight::Bind( Graphics& gfx ) noexcept
 {
+	const auto worldViewPos = DirectX::XMVector3Transform(
+		DirectX::XMVectorSet( pos.x,pos.y,pos.z,1.0f ),
+		gfx.GetView()
+	);
 	PointLightCBuffer plCBuf = {
-		pos,
+		{},
 		color,
 		ambient,
 		intensity,
@@ -19,6 +23,7 @@ void PointLight::Bind( Graphics& gfx ) noexcept
 		attLin,
 		attQuad
 	};
+	DirectX::XMStoreFloat3( &plCBuf.worldViewPos,worldViewPos );
 	psCBuff.Update( gfx,plCBuf );
 	psCBuff.Bind( gfx );
 }

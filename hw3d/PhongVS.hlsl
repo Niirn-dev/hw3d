@@ -1,12 +1,12 @@
 cbuffer CBuff
 {
-    matrix world;
+    matrix worldView;
     matrix worldViewProj;
 };
 
 struct VSOut
 {
-    float3 worldPos : Position;
+    float3 worldViewPos : Position;
     float3 n : Normal;
     float4 pos : SV_Position;
 };
@@ -14,8 +14,8 @@ struct VSOut
 VSOut main( float3 pos : Position,float3 n : Normal )
 {
     VSOut vso;
-    vso.worldPos = (float3)mul(float4(pos, 1.0f), world);
-    vso.n = mul(n, (float3x3)world);
+    vso.worldViewPos = (float3)mul(float4(pos, 1.0f), worldView);
+    vso.n = (float3) mul(float4(n, 0.0f), worldView);
     vso.pos = mul(float4(pos, 1.0f), worldViewProj);
 	return vso;
 }

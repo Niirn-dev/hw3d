@@ -49,6 +49,9 @@
     <Filter Include="Header Files\Drawable\Defunct">
       <UniqueIdentifier>{79f58305-e518-4cbb-a76f-5af4430d95be}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Defunct">
+      <UniqueIdentifier>{e8a82f15-ce00-47c1-bc9d-742d9c70a54e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp">
@@ -352,19 +355,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="TextureVS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="TexturePS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="SolidPS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="BlendPS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="BlendVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="SolidVS.hlsl">
@@ -375,6 +366,18 @@
     </FxCompile>
     <FxCompile Include="PhongVS.hlsl">
       <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="BlendPS.hlsl">
+      <Filter>Shaders\Defunct</Filter>
+    </FxCompile>
+    <FxCompile Include="BlendVS.hlsl">
+      <Filter>Shaders\Defunct</Filter>
+    </FxCompile>
+    <FxCompile Include="TexturePS.hlsl">
+      <Filter>Shaders\Defunct</Filter>
+    </FxCompile>
+    <FxCompile Include="TextureVS.hlsl">
+      <Filter>Shaders\Defunct</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
