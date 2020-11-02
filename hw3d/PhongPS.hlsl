@@ -34,5 +34,5 @@ float4 main( float3 worldViewPos : Position,float3 n : Normal ) : SV_Target
     const float specular = att * diffuseColor * diffuseIntensity * specularIntensity * max(0.0f, pow(dot(normalize(-worldViewPos), normalize(r)), specularPower));
     
     // final color
-    return float4(saturate(diffuse + ambient + specular + materialColor), 1.0f);
+    return float4(saturate((diffuse + ambient + specular) * materialColor), 1.0f);
 }

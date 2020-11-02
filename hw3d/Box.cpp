@@ -34,7 +34,7 @@ Box::Box( Graphics& gfx,
 
 		struct ColorBuffer
 		{
-			alignas( 16 ) DirectX::XMFLOAT3 pos = { 0.2f,0.2f,0.4f };
+			alignas( 16 ) DirectX::XMFLOAT3 pos = { 0.5f,0.5f,0.7f };
 			float specIntensity = 1.0f;
 			float specPower = 100.0f;
 		} cBuff;
