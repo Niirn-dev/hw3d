@@ -17,11 +17,12 @@ SkinnedBox::SkinnedBox( Graphics& gfx,
 	{
 		struct Vertex
 		{
-			DirectX::XMFLOAT3 pos;
+			DirectX::XMFLOAT3 pos = {};
+			DirectX::XMFLOAT3 n = {};
 			struct
 			{
-				float u;
-				float v;
+				float u = 0.0f;
+				float v = 0.0f;
 			} tex;
 		};
 
@@ -30,17 +31,28 @@ SkinnedBox::SkinnedBox( Graphics& gfx,
 		AddStaticBind( std::make_unique<Texture>( gfx,Surface::FromFile( "Images\\cube.png" ) ) );
 		AddStaticBind( std::make_unique<Sampler>( gfx ) );
 
-		auto pvs = std::make_unique<VertexShader>( gfx,L"TextureVS.cso" );
+		auto pvs = std::make_unique<VertexShader>( gfx,L"TexturePhongVS.cso" );
 		auto pvsbc = pvs->GetBytecode();
 		AddStaticBind( std::move( pvs ) );
 
-		AddStaticBind( std::make_unique<PixelShader>( gfx,L"TexturePS.cso" ) );
+		AddStaticBind( std::make_unique<GeometryShader>( gfx,L"TexturePhongGS.cso" ) );
+
+		AddStaticBind( std::make_unique<PixelShader>( gfx,L"TexturePhongPS.cso" ) );
 
 		AddStaticIndexBuffer( std::make_unique<IndexBuffer>( gfx,itlist.indices ) );
 
+		struct ColorBuffer
+		{
+			float specIntensity = 0.7f;
+			float specPower = 64.0f;
+			float padding[2];
+		} cBuff;
+		AddStaticBind( std::make_unique<PixelConstantBuffer<ColorBuffer>>( gfx,cBuff,0u ) );
+
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied = {
 			{ "Position",0u,DXGI_FORMAT_R32G32B32_FLOAT,0u,0u,D3D11_INPUT_PER_VERTEX_DATA,0u },
-			{ "TexCoord",0u,DXGI_FORMAT_R32G32_FLOAT,0u,sizeof( Vertex::pos ),D3D11_INPUT_PER_VERTEX_DATA,0u },
+			{ "Normal",0u,DXGI_FORMAT_R32G32B32_FLOAT,0u,offsetof( Vertex,Vertex::n ),D3D11_INPUT_PER_VERTEX_DATA,0u },
+			{ "TexCoord",0u,DXGI_FORMAT_R32G32_FLOAT,0u,offsetof( Vertex,Vertex::tex ),D3D11_INPUT_PER_VERTEX_DATA,0u },
 		};
 		AddStaticBind( std::make_unique<InputLayout>( gfx,ied,pvsbc ) );
 

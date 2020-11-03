@@ -28,6 +28,8 @@ Box::Box( Graphics& gfx,
 		auto pvsbc = pvs->GetBytecode();
 		AddStaticBind( std::move( pvs ) );
 
+		AddStaticBind( std::make_unique<GeometryShader>( gfx,L"" ) );
+
 		AddStaticBind( std::make_unique<PixelShader>( gfx,L"PhongPS.cso" ) );
 
 		AddStaticIndexBuffer( std::make_unique<IndexBuffer>( gfx,model.indices) );

@@ -1,13 +1,10 @@
 #include "App.h"
 #include "Box.h"
-#include "Pyramid.h"
 #include "Spheroid.h"
 #include <memory>
 #include <random>
 #include <algorithm>
 #include <iterator>
-#include "Surface.h"
-#include "Sheet.h"
 #include "SkinnedBox.h"
 #include "GDIPlusManager.h"
 #include "imgui\imgui.h"
@@ -27,29 +24,29 @@ App::App( std::optional<int> wndWidth,std::optional<int> wndHeight,std::optional
 	std::uniform_real_distribution<float> sDist( 0.0f,3.1415f * 0.3f );
 	std::uniform_real_distribution<float> distortionDist( 0.8f,1.6f );
 	std::uniform_int_distribution<int> divDist( 4,48 );
-	// std::uniform_int_distribution<int> shapeDist( 0,4 );
+	 std::uniform_int_distribution<int> shapeDist( 0,1 );
 
 	std::generate_n(
 		std::back_inserter( drawables ),
 		140,
 		[&]() -> std::unique_ptr<Drawable>
 		{
-			// switch ( shapeDist( rng ) )
-			// {
-			// case 0:
+			 switch ( shapeDist( rng ) )
+			 {
+			 case 0:
 			 	return std::make_unique<Box>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
-			// case 1:
-			// 	return std::make_unique<Pyramid>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
+			 case 1:
+			 	return std::make_unique<SkinnedBox>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
 			// case 2:
 			// 	return std::make_unique<Spheroid>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist,divDist );
 			// case 3:
 			// 	return std::make_unique<Sheet>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
 			// case 4:
-			// 	return std::make_unique<SkinnedBox>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
-			// default:
-			// 	assert( "Wrong shape type" && false );
-			// 	return std::make_unique<Box>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
-			// }
+			// 	return std::make_unique<Pyramid>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
+			 default:
+			 	assert( "Wrong shape type" && false );
+			 	return std::make_unique<Box>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
+			 }
 		} );
 
 	wnd.Gfx().SetProjection( DirectX::XMMatrixPerspectiveLH( 1.0f,3.0f / 4.0f,0.5f,60.0f ) );

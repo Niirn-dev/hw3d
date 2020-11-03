@@ -156,9 +156,6 @@
     <ClCompile Include="Sheet.cpp">
       <Filter>Source Files\Drawable\Defunct</Filter>
     </ClCompile>
-    <ClCompile Include="SkinnedBox.cpp">
-      <Filter>Source Files\Drawable\Defunct</Filter>
-    </ClCompile>
     <ClCompile Include="Spheroid.cpp">
       <Filter>Source Files\Drawable\Defunct</Filter>
     </ClCompile>
@@ -167,6 +164,12 @@
     </ClCompile>
     <ClCompile Include="PointLight.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryShader.cpp">
+      <Filter>Source Files\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinnedBox.cpp">
+      <Filter>Source Files\Drawable</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -320,9 +323,6 @@
     <ClInclude Include="Sheet.h">
       <Filter>Header Files\Drawable\Defunct</Filter>
     </ClInclude>
-    <ClInclude Include="SkinnedBox.h">
-      <Filter>Header Files\Drawable\Defunct</Filter>
-    </ClInclude>
     <ClInclude Include="Spheroid.h">
       <Filter>Header Files\Drawable\Defunct</Filter>
     </ClInclude>
@@ -331,6 +331,12 @@
     </ClInclude>
     <ClInclude Include="PointLight.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryShader.h">
+      <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinnedBox.h">
+      <Filter>Header Files\Drawable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -373,11 +379,14 @@
     <FxCompile Include="BlendVS.hlsl">
       <Filter>Shaders\Defunct</Filter>
     </FxCompile>
-    <FxCompile Include="TexturePS.hlsl">
-      <Filter>Shaders\Defunct</Filter>
+    <FxCompile Include="TexturePhongGS.hlsl">
+      <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="TextureVS.hlsl">
-      <Filter>Shaders\Defunct</Filter>
+    <FxCompile Include="TexturePhongVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="TexturePhongPS.hlsl">
+      <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

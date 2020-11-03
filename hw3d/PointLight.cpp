@@ -115,7 +115,7 @@ void PointLight::ResetPosition() noexcept
 void PointLight::ResetColors() noexcept
 {
 	color = { 1.0f,1.0f,1.0f };
-	intensity = 0.0f;
+	intensity = 1.0f;
 	ambient = { 0.12f,0.0f,0.07f };
 }
 
