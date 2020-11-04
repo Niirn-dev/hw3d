@@ -11,6 +11,10 @@
 #include "imgui\imgui_impl_win32.h"
 #include "imgui\imgui_impl_dx11.h"
 
+#include <assimp\Importer.hpp>
+#include <assimp\scene.h>
+#include <assimp\postprocess.h>
+
 GDIPlusManager gdipm;
 
 App::App( std::optional<int> wndWidth,std::optional<int> wndHeight,std::optional<std::string> wndName )
@@ -18,6 +22,12 @@ App::App( std::optional<int> wndWidth,std::optional<int> wndHeight,std::optional
 	wnd( Window{ wndWidth.value_or( wndWidthDefault ),wndHeight.value_or( wndHeightDefault ),wndName.value_or( "HW3D Window" ).c_str() } ),
 	light( wnd.Gfx() )
 {
+	Assimp::Importer imp;
+	auto scene = imp.ReadFile( "Models/suzanne.obj",
+		aiProcess_Triangulate |
+		aiProcess_JoinIdenticalVertices 
+	);
+
 	std::mt19937 rng{ std::random_device{}() };
 	std::uniform_real_distribution<float> rDist( 5.0f,25.0f );
 	std::uniform_real_distribution<float> aDist( 0.0f,3.1415f * 2.0f );
