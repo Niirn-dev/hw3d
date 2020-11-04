@@ -67,8 +67,38 @@ int App::Go()
 	}
 }
 
+#include "Vertex.h"
+void f()
+{
+	namespace dx = DirectX;
+	VertexData vd{ std::move( 
+		VertexLayout{}.Append( VertexLayout::ElementType::Position3D )
+			.Append( VertexLayout::ElementType::Normal )
+			.Append( VertexLayout::ElementType::Texture2D )
+	) };
+	vd.EmplaceBack(
+		dx::XMFLOAT3{ 1.0f,1.0f,5.0f },
+		dx::XMFLOAT3{ 2.0f,1.0f,4.0f },
+		dx::XMFLOAT2{ 6.0f,9.0f }
+	);
+	vd.EmplaceBack(
+		dx::XMFLOAT3{ 6.0f,9.0f,6.0f },
+		dx::XMFLOAT3{ 9.0f,6.0f,9.0f },
+		dx::XMFLOAT2{ 4.2f,0.0f }
+	);
+	auto pos = vd[0].Attr<VertexLayout::ElementType::Position3D>();
+	auto nor = vd[0].Attr<VertexLayout::ElementType::Normal>();
+	auto tex = vd[1].Attr<VertexLayout::ElementType::Texture2D>();
+	vd.Back().Attr<VertexLayout::ElementType::Position3D>().z = 420.0f;
+	pos = vd.Back().Attr<VertexLayout::ElementType::Position3D>();
+	const auto& cvd = vd;
+	pos = cvd[1].Attr<VertexLayout::ElementType::Position3D>();
+}
+
 void App::DoFrame()
 {
+	f();
+
 	const float dt = timer.Mark() * simulationSpeedFactor;
 	wnd.Gfx().BeginFrame( bkgColor.r,bkgColor.g,bkgColor.b );
 	wnd.Gfx().SetView( cam.GetTranformXM() );
