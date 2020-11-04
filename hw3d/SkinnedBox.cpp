@@ -45,7 +45,7 @@ SkinnedBox::SkinnedBox( Graphics& gfx,
 		{
 			float specIntensity = 0.7f;
 			float specPower = 64.0f;
-			float padding[2];
+			float padding[2] = {};
 		} cBuff;
 		AddStaticBind( std::make_unique<PixelConstantBuffer<ColorBuffer>>( gfx,cBuff,0u ) );
 
