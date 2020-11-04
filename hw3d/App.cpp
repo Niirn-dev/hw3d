@@ -6,14 +6,11 @@
 #include <algorithm>
 #include <iterator>
 #include "SkinnedBox.h"
+#include "AssTest.h"
 #include "GDIPlusManager.h"
 #include "imgui\imgui.h"
 #include "imgui\imgui_impl_win32.h"
 #include "imgui\imgui_impl_dx11.h"
-
-#include <assimp\Importer.hpp>
-#include <assimp\scene.h>
-#include <assimp\postprocess.h>
 
 GDIPlusManager gdipm;
 
@@ -22,19 +19,17 @@ App::App( std::optional<int> wndWidth,std::optional<int> wndHeight,std::optional
 	wnd( Window{ wndWidth.value_or( wndWidthDefault ),wndHeight.value_or( wndHeightDefault ),wndName.value_or( "HW3D Window" ).c_str() } ),
 	light( wnd.Gfx() )
 {
-	Assimp::Importer imp;
-	auto scene = imp.ReadFile( "Models/suzanne.obj",
-		aiProcess_Triangulate |
-		aiProcess_JoinIdenticalVertices 
-	);
-
 	std::mt19937 rng{ std::random_device{}() };
 	std::uniform_real_distribution<float> rDist( 5.0f,25.0f );
 	std::uniform_real_distribution<float> aDist( 0.0f,3.1415f * 2.0f );
 	std::uniform_real_distribution<float> sDist( 0.0f,3.1415f * 0.3f );
 	std::uniform_real_distribution<float> distortionDist( 0.8f,1.6f );
+	std::uniform_real_distribution<float> noDistortionDist( 1.0f,1.0f );
 	std::uniform_int_distribution<int> divDist( 4,48 );
-	 std::uniform_int_distribution<int> shapeDist( 0,1 );
+	std::uniform_int_distribution<int> shapeDist( 0,2 );
+	std::uniform_real_distribution<float> colorDist( 0.0f,1.0f );
+	std::uniform_real_distribution<float> specIntenDist( 0.1f,1.6f );
+	std::uniform_real_distribution<float> specPowerDist( 60.0f,160.0f );
 
 	std::generate_n(
 		std::back_inserter( drawables ),
@@ -47,8 +42,11 @@ App::App( std::optional<int> wndWidth,std::optional<int> wndHeight,std::optional
 			 	return std::make_unique<Box>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
 			 case 1:
 			 	return std::make_unique<SkinnedBox>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
-			// case 2:
-			// 	return std::make_unique<Spheroid>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist,divDist );
+			 case 2:
+			 {
+				 DirectX::XMFLOAT3 color = { colorDist( rng ),colorDist( rng ),colorDist( rng ) };
+				 return std::make_unique<AssTest>( wnd.Gfx(),rng,rDist,aDist,sDist,noDistortionDist,color,specIntenDist( rng ),specPowerDist( rng ),0.8f );
+			 }
 			// case 3:
 			// 	return std::make_unique<Sheet>( wnd.Gfx(),rng,rDist,aDist,sDist,distortionDist );
 			// case 4:
