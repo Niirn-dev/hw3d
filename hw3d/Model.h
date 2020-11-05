@@ -175,9 +175,9 @@ public:
 
 		return std::move( node );
 	}
-	void Draw( Graphics& gfx ) const noexcept( !IS_DEBUG )
+	void Draw( Graphics& gfx,DirectX::FXMMATRIX transform ) const noexcept( !IS_DEBUG )
 	{
-		pRoot->Draw( gfx,DirectX::XMMatrixIdentity() );
+		pRoot->Draw( gfx,transform );
 	}
 private:
 	std::unique_ptr<Node> pRoot;

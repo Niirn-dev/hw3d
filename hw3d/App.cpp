@@ -45,7 +45,7 @@ void App::DoFrame()
 
 	light.Bind( wnd.Gfx() );
 	light.Draw( wnd.Gfx() );
-	nano.Draw( wnd.Gfx() );
+	nano.Draw( wnd.Gfx(),DirectX::XMMatrixTranslation( modelPosition.x,modelPosition.y,modelPosition.z ) );
 
 	while ( !wnd.kbd.KeyIsEmpty() )
 	{
@@ -67,6 +67,9 @@ void App::DoFrame()
 	{
 		ImGui::ColorEdit3( "Background",&bkgColor.r );
 		ImGui::Text( "Simulation framerate: %.1f",ImGui::GetIO().Framerate );
+		ImGui::SliderFloat( "X",&modelPosition.x,-20.0f,20.0f,"%.1f" );
+		ImGui::SliderFloat( "Y",&modelPosition.y,-20.0f,20.0f,"%.1f" );
+		ImGui::SliderFloat( "Z",&modelPosition.z,-20.0f,20.0f,"%.1f" );
 	}
 	ImGui::End();
 
