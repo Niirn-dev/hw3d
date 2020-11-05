@@ -15,8 +15,8 @@ public:
 	Drawable( const Drawable& ) = delete;
 	Drawable& operator=( const Drawable& ) = delete;
 	virtual ~Drawable() = default;
-	void Draw( Graphics& gfx ) noexcept( !IS_DEBUG );
-	virtual void Update( float dt ) noexcept = 0;
+	void Draw( Graphics& gfx ) const noexcept( !IS_DEBUG );
+	virtual void Update( float ) noexcept {};
 	virtual DirectX::XMMATRIX GetTransformXM() const noexcept = 0;
 protected:
 	void AddBind( std::unique_ptr<Bindable> pBind ) noexcept( !IS_DEBUG );

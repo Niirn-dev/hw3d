@@ -3,7 +3,7 @@
 #include <cassert>
 #include <typeinfo>
 
-void Drawable::Draw( Graphics& gfx ) noexcept( !IS_DEBUG )
+void Drawable::Draw( Graphics& gfx ) const noexcept( !IS_DEBUG )
 {
 	for ( auto& b : binds )
 	{

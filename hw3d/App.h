@@ -7,6 +7,7 @@
 #include "ImguiManager.h"
 #include "Camera.h"
 #include "PointLight.h"
+#include "Model.h"
 
 class App
 {
@@ -30,7 +31,6 @@ private:
 	ChiliTimer timer;
 	Camera cam;
 	PointLight light;
-	std::vector<std::unique_ptr<class Drawable>> drawables;
 
 	struct
 	{
@@ -38,6 +38,6 @@ private:
 		float g = 0.0f;
 		float b = 0.12f;
 	} bkgColor;
-	float simulationSpeedFactor = 1.0f;
+	Model nano{ wnd.Gfx(),"Models/nanosuit.obj" };
 };
 
