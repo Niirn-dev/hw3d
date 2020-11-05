@@ -1,11 +1,8 @@
 #include "App.h"
-#include "Box.h"
-#include "Spheroid.h"
 #include <memory>
 #include <random>
 #include <algorithm>
 #include <iterator>
-#include "SkinnedBox.h"
 #include "AssTest.h"
 #include "GDIPlusManager.h"
 #include "imgui\imgui.h"
@@ -63,6 +60,13 @@ void App::DoFrame()
 		}
 	}
 
+	SpawnGuiElements();
+
+	wnd.Gfx().EndFrame();
+}
+
+void App::SpawnGuiElements()
+{
 	if ( ImGui::Begin( "Simulation control" ) )
 	{
 		ImGui::ColorEdit3( "Background",&bkgColor.r );
@@ -75,6 +79,4 @@ void App::DoFrame()
 
 	cam.SpawnControlWindow();
 	light.SpawnControlWindow();
-
-	wnd.Gfx().EndFrame();
 }

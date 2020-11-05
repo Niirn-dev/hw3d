@@ -43,12 +43,6 @@
     <Filter Include="Source Files\imgui">
       <UniqueIdentifier>{be911bf2-073a-4687-b39d-cbcd6debfbfe}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Drawable\Defunct">
-      <UniqueIdentifier>{0ada1c4c-78fb-4137-b658-0314fc29e155}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Drawable\Defunct">
-      <UniqueIdentifier>{79f58305-e518-4cbb-a76f-5af4430d95be}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders\Defunct">
       <UniqueIdentifier>{e8a82f15-ce00-47c1-bc9d-742d9c70a54e}</UniqueIdentifier>
     </Filter>
@@ -111,9 +105,6 @@
     <ClCompile Include="TransformCBuf.cpp">
       <Filter>Source Files\Bindable</Filter>
     </ClCompile>
-    <ClCompile Include="Box.cpp">
-      <Filter>Source Files\Drawable</Filter>
-    </ClCompile>
     <ClCompile Include="Surface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -150,15 +141,6 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Pyramid.cpp">
-      <Filter>Source Files\Drawable\Defunct</Filter>
-    </ClCompile>
-    <ClCompile Include="Sheet.cpp">
-      <Filter>Source Files\Drawable\Defunct</Filter>
-    </ClCompile>
-    <ClCompile Include="Spheroid.cpp">
-      <Filter>Source Files\Drawable\Defunct</Filter>
-    </ClCompile>
     <ClCompile Include="SolidSphere.cpp">
       <Filter>Source Files\Drawable</Filter>
     </ClCompile>
@@ -167,12 +149,6 @@
     </ClCompile>
     <ClCompile Include="GeometryShader.cpp">
       <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinnedBox.cpp">
-      <Filter>Source Files\Drawable</Filter>
-    </ClCompile>
-    <ClCompile Include="AssTest.cpp">
-      <Filter>Source Files\Drawable</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -245,12 +221,6 @@
     <ClInclude Include="Drawable.h">
       <Filter>Header Files\Drawable</Filter>
     </ClInclude>
-    <ClInclude Include="Box.h">
-      <Filter>Header Files\Drawable</Filter>
-    </ClInclude>
-    <ClInclude Include="BindableBase.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
     <ClInclude Include="DrawableBase.h">
       <Filter>Header Files\Drawable</Filter>
     </ClInclude>
@@ -320,15 +290,6 @@
     <ClInclude Include="DrawableTest.h">
       <Filter>Header Files\Drawable</Filter>
     </ClInclude>
-    <ClInclude Include="Pyramid.h">
-      <Filter>Header Files\Drawable\Defunct</Filter>
-    </ClInclude>
-    <ClInclude Include="Sheet.h">
-      <Filter>Header Files\Drawable\Defunct</Filter>
-    </ClInclude>
-    <ClInclude Include="Spheroid.h">
-      <Filter>Header Files\Drawable\Defunct</Filter>
-    </ClInclude>
     <ClInclude Include="SolidSphere.h">
       <Filter>Header Files\Drawable</Filter>
     </ClInclude>
@@ -338,17 +299,14 @@
     <ClInclude Include="GeometryShader.h">
       <Filter>Header Files\Bindable</Filter>
     </ClInclude>
-    <ClInclude Include="SkinnedBox.h">
-      <Filter>Header Files\Drawable</Filter>
-    </ClInclude>
     <ClInclude Include="Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AssTest.h">
-      <Filter>Header Files\Drawable</Filter>
-    </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Header Files\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="BindableCommon.h">
+      <Filter>Header Files\Bindable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -373,32 +331,20 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="SolidPS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="SolidVS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="PhongPS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PhongVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="BlendPS.hlsl">
-      <Filter>Shaders\Defunct</Filter>
-    </FxCompile>
-    <FxCompile Include="BlendVS.hlsl">
-      <Filter>Shaders\Defunct</Filter>
-    </FxCompile>
     <FxCompile Include="TexturePhongGS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="TexturePhongVS.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\Defunct</Filter>
     </FxCompile>
     <FxCompile Include="TexturePhongPS.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\Defunct</Filter>
+    </FxCompile>
+    <FxCompile Include="TexturePhongVS.hlsl">
+      <Filter>Shaders\Defunct</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

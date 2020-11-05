@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DrawableBase.h"
-#include "BindableBase.h"
+#include "BindableCommon.h"
 #include "Vertex.h"
 #include <optional>
 #include <assimp\Importer.hpp>

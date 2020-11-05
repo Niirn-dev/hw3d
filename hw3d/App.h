@@ -22,6 +22,7 @@ public:
 	int Go();
 private:
 	void DoFrame();
+	void SpawnGuiElements();
 private:
 	static constexpr int wndWidthDefault = 800;
 	static constexpr int wndHeightDefault = 600;
