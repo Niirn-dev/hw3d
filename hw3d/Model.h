@@ -16,11 +16,13 @@ class Node
 {
 	friend class Model;
 public:
-	Node( std::vector<Mesh*> meshPtrs,const DirectX::XMMATRIX& transform_in );
+	Node( std::string name,std::vector<Mesh*> meshPtrs,const DirectX::XMMATRIX& transform_in );
 	void Draw( Graphics& gfx,DirectX::FXMMATRIX accumulatedTransforms ) noexcept( !IS_DEBUG );
+	void ShowTree() const noexcept( !IS_DEBUG );
 private:
 	void AddChild( std::unique_ptr<Node> pNode ) noexcept( !IS_DEBUG );
 private:
+	std::string name;
 	std::vector<std::unique_ptr<Node>> childPtrs;
 	std::vector<Mesh*> meshPtrs;
 	DirectX::XMFLOAT4X4 transform = {};
@@ -30,10 +32,13 @@ class Model
 {
 public:
 	Model( Graphics& gfx,const std::string& file );
+	~Model();
 	static std::unique_ptr<Mesh> ParseMesh( Graphics& gfx,const struct aiMesh* pMesh ) noexcept( !IS_DEBUG );
 	std::unique_ptr<Node> ParseNode( const struct aiNode* pNode ) noexcept( !IS_DEBUG );
-	void Draw( Graphics& gfx,DirectX::FXMMATRIX transform ) const noexcept( !IS_DEBUG );
+	void Draw( Graphics& gfx ) const noexcept( !IS_DEBUG );
+	void SpawnControlWindow() const noexcept( !IS_DEBUG );
 private:
 	std::unique_ptr<Node> pRoot;
 	std::vector<std::unique_ptr<Mesh>> meshPtrs;
+	std::unique_ptr<class ModelWindow> pModelWindow;
 };

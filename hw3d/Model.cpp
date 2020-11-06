@@ -4,6 +4,7 @@
 #include <assimp\postprocess.h>
 #include "BindableCommon.h"
 #include "Vertex.h"
+#include "imgui\imgui.h"
 
 Mesh::Mesh( Graphics& gfx,std::vector<std::unique_ptr<Bindable>> bindablePtrs )
 {
@@ -39,8 +40,9 @@ DirectX::XMMATRIX Mesh::GetTransformXM() const noexcept
 	return DirectX::XMLoadFloat4x4( &transform );
 }
 
-Node::Node( std::vector<Mesh*> meshPtrs,const DirectX::XMMATRIX& transform_in )
+Node::Node( std::string name,std::vector<Mesh*> meshPtrs,const DirectX::XMMATRIX& transform_in )
 	:
+	name( name ),
 	meshPtrs( std::move( meshPtrs ) )
 {
 	DirectX::XMStoreFloat4x4( &transform,transform_in );
@@ -61,13 +63,68 @@ void Node::Draw( Graphics& gfx,DirectX::FXMMATRIX accumulatedTransforms ) noexce
 	}
 }
 
+void Node::ShowTree() const noexcept( !IS_DEBUG )
+{
+	if ( ImGui::TreeNode( name.c_str() ) )
+	{
+		for ( auto& c : childPtrs )
+		{
+			c->ShowTree();
+		}
+
+		ImGui::TreePop();
+	}
+}
+
 void Node::AddChild( std::unique_ptr<Node> pNode ) noexcept( !IS_DEBUG )
 {
 	assert( pNode );
 	childPtrs.push_back( std::move( pNode ) );
 }
 
+class ModelWindow
+{
+public:
+	void Show( const char* windowName,const Node& root ) noexcept( !IS_DEBUG )
+	{
+		if ( ImGui::Begin( windowName ) )
+		{
+			ImGui::Columns( 2 );
+			root.ShowTree();
+
+			ImGui::NextColumn();
+			ImGui::SliderFloat( "X",&modelPosition.pos.x,-20.0f,20.0f,"%.2f" );
+			ImGui::SliderFloat( "Y",&modelPosition.pos.y,-20.0f,20.0f,"%.2f" );
+			ImGui::SliderFloat( "Z",&modelPosition.pos.z,-20.0f,20.0f,"%.2f" );
+
+			ImGui::SliderAngle( "Roll",&modelPosition.angle.roll,-180.0f,180.0f,"%.1f deg" );
+			ImGui::SliderAngle( "Pitch",&modelPosition.angle.pitch,-180.0f,180.0f,"%.1f deg" );
+			ImGui::SliderAngle( "Yaw",&modelPosition.angle.yaw,-180.0f,180.0f,"%.1f deg" );
+		}
+		ImGui::End();
+	}
+
+	DirectX::XMMATRIX GetTransformXM() const noexcept
+	{
+		return DirectX::XMMatrixRotationRollPitchYaw( modelPosition.angle.pitch,modelPosition.angle.yaw,modelPosition.angle.roll ) *
+			DirectX::XMMatrixTranslation( modelPosition.pos.x,modelPosition.pos.y,modelPosition.pos.z );
+	}
+private:
+	struct
+	{
+		DirectX::XMFLOAT3 pos = {};
+		struct
+		{
+			float pitch = 0.0f;
+			float yaw = 0.0f;
+			float roll = 0.0f;
+		} angle;
+	} modelPosition;
+};
+
 Model::Model( Graphics& gfx,const std::string& file )
+	:
+	pModelWindow( std::make_unique<ModelWindow>() )
 {
 	Assimp::Importer imp;
 	const auto pScene = imp.ReadFile(
@@ -83,6 +140,9 @@ Model::Model( Graphics& gfx,const std::string& file )
 
 	pRoot = ParseNode( pScene->mRootNode );
 }
+
+Model::~Model()
+{}
 
 std::unique_ptr<Mesh> Model::ParseMesh( Graphics& gfx,const aiMesh* pMesh ) noexcept( !IS_DEBUG )
 {
@@ -151,7 +211,7 @@ std::unique_ptr<Node> Model::ParseNode( const aiNode* pNode ) noexcept( !IS_DEBU
 		curMeshPtrs.push_back( meshPtrs.at( meshIdx ).get() );
 	}
 
-	auto node = std::make_unique<Node>( std::move( curMeshPtrs ),transform );
+	auto node = std::make_unique<Node>( pNode->mName.C_Str(),std::move( curMeshPtrs ),transform );
 	for ( size_t i = 0; i < pNode->mNumChildren; ++i )
 	{
 		node->AddChild( ParseNode( pNode->mChildren[i] ) );
@@ -160,7 +220,12 @@ std::unique_ptr<Node> Model::ParseNode( const aiNode* pNode ) noexcept( !IS_DEBU
 	return std::move( node );
 }
 
-void Model::Draw( Graphics& gfx,DirectX::FXMMATRIX transform ) const noexcept( !IS_DEBUG )
+void Model::Draw( Graphics& gfx ) const noexcept( !IS_DEBUG )
 {
-	pRoot->Draw( gfx,transform );
+	pRoot->Draw( gfx,pModelWindow->GetTransformXM() );
+}
+
+void Model::SpawnControlWindow() const noexcept( !IS_DEBUG )
+{
+	pModelWindow->Show( "Model window",*pRoot );
 }
