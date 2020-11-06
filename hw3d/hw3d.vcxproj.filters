@@ -150,6 +150,9 @@
     <ClCompile Include="GeometryShader.cpp">
       <Filter>Source Files\Bindable</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinFlags.h">
