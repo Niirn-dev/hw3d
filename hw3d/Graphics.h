@@ -50,7 +50,7 @@ public:
 		std::string info;
 	};
 public:
-	Graphics( HWND hWnd );
+	Graphics( HWND hWnd,int width,int height );
 	~Graphics();
 	Graphics( const Graphics& ) = delete;
 	Graphics& operator=( const Graphics& ) = delete;
@@ -71,6 +71,12 @@ public:
 	void BeginFrame( float r,float g,float b ) noexcept;
 	void EndFrame();
 
+public:
+	float GetAspectRatio() const noexcept;
+private:
+	float aspectRatio;
+
+public:
 	void EnableImgui() noexcept;
 	void DisableImgui() noexcept;
 	bool IsImguiEnabled() const noexcept;

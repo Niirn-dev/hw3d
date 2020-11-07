@@ -11,13 +11,15 @@
 namespace wrl = Microsoft::WRL;
 namespace dx = DirectX;
 
-Graphics::Graphics( HWND hWnd )
+Graphics::Graphics( HWND hWnd,int width,int height )
+	:
+	aspectRatio( (float)height / (float)width )
 {
 	// set up swap chain description
 	DXGI_SWAP_CHAIN_DESC sd = {};
 	sd.BufferCount = 1;
-	sd.BufferDesc.Width = 0;
-	sd.BufferDesc.Height = 0;
+	sd.BufferDesc.Width = (UINT)width;
+	sd.BufferDesc.Height = (UINT)height;
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	sd.BufferDesc.RefreshRate.Numerator = 0;
 	sd.BufferDesc.RefreshRate.Denominator = 0;
@@ -69,8 +71,8 @@ Graphics::Graphics( HWND hWnd )
 
 	// create depth stencil texture
 	D3D11_TEXTURE2D_DESC tDesc = {};
-	tDesc.Width = 800u;
-	tDesc.Height = 600u;
+	tDesc.Width = (UINT)width;
+	tDesc.Height = (UINT)height;
 	tDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	tDesc.MipLevels = 1u;
 	tDesc.ArraySize = 1u;
@@ -92,8 +94,8 @@ Graphics::Graphics( HWND hWnd )
 
 	// configure viewport
 	D3D11_VIEWPORT vp;
-	vp.Width = 800;
-	vp.Height = 600;
+	vp.Width = (float)width;
+	vp.Height = (float)height;
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
 	vp.TopLeftX = 0;
@@ -175,6 +177,11 @@ void Graphics::EndFrame()
 			throw GFX_EXCEPT( hr );
 		}
 	}
+}
+
+float Graphics::GetAspectRatio() const noexcept
+{
+	return aspectRatio;
 }
 
 void Graphics::EnableImgui() noexcept
