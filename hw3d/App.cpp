@@ -13,6 +13,7 @@ GDIPlusManager gdipm;
 
 App::App( std::optional<int> wndWidth,std::optional<int> wndHeight,std::optional<std::string> wndName )
 	:
+	imgui(),
 	wnd( Window{ wndWidth.value_or( wndWidthDefault ),wndHeight.value_or( wndHeightDefault ),wndName.value_or( "HW3D Window" ).c_str() } ),
 	light( wnd.Gfx() )
 {

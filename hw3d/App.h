@@ -39,6 +39,6 @@ private:
 		float g = 0.0f;
 		float b = 0.12f;
 	} bkgColor;
-	Model nano{ wnd.Gfx(),"Models/nanosuit.obj" };
+	Model nano{ wnd.Gfx(),"Models/nano_hierarchy.gltf" };
 };
 
