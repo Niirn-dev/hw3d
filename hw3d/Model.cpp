@@ -5,6 +5,9 @@
 #include "BindableCommon.h"
 #include "Vertex.h"
 #include "imgui\imgui.h"
+#include <unordered_map>
+
+namespace dx = DirectX;
 
 Mesh::Mesh( Graphics& gfx,std::vector<std::unique_ptr<Bindable>> bindablePtrs )
 {
@@ -45,12 +48,15 @@ Node::Node( std::string name,std::vector<Mesh*> meshPtrs,const DirectX::XMMATRIX
 	name( name ),
 	meshPtrs( std::move( meshPtrs ) )
 {
-	DirectX::XMStoreFloat4x4( &transform,transform_in );
+	dx::XMStoreFloat4x4( &transform,transform_in );
+	dx::XMStoreFloat4x4( &acquiredTransform,DirectX::XMMatrixIdentity() );
 }
 
 void Node::Draw( Graphics& gfx,DirectX::FXMMATRIX accumulatedTransforms ) noexcept( !IS_DEBUG )
 {
-	const auto combinedTransform = DirectX::XMLoadFloat4x4( &transform ) * accumulatedTransforms;
+	const auto combinedTransform = dx::XMLoadFloat4x4( &acquiredTransform ) * 
+		dx::XMLoadFloat4x4( &transform ) *
+		accumulatedTransforms;
 
 	for ( auto& pm : meshPtrs )
 	{
@@ -63,17 +69,32 @@ void Node::Draw( Graphics& gfx,DirectX::FXMMATRIX accumulatedTransforms ) noexce
 	}
 }
 
-void Node::ShowTree() const noexcept( !IS_DEBUG )
+void Node::ShowTree( int& trackedIndex,std::optional<int>& selectedIndex,Node*& pSelectedNode ) const noexcept( !IS_DEBUG )
 {
-	if ( ImGui::TreeNode( name.c_str() ) )
+	const auto curIndex = trackedIndex++;
+	const auto treeFlags = ImGuiTreeNodeFlags_OpenOnArrow |
+		( selectedIndex.value_or( -1 ) == curIndex ? ImGuiTreeNodeFlags_Selected : 0 ) |
+		( childPtrs.empty() ? ImGuiTreeNodeFlags_Leaf : 0 );
+
+	if ( ImGui::TreeNodeEx( (void*)(intptr_t)curIndex,treeFlags,name.c_str() ) )
 	{
+		if ( ImGui::IsItemClicked() )
+		{
+			*selectedIndex = curIndex;
+			pSelectedNode = const_cast<Node*>( this );
+		}
 		for ( auto& c : childPtrs )
 		{
-			c->ShowTree();
+			c->ShowTree( trackedIndex,selectedIndex,pSelectedNode );
 		}
 
 		ImGui::TreePop();
 	}
+}
+
+void Node::SetAcquiredTransform( DirectX::FXMMATRIX transform_in ) noexcept
+{
+	DirectX::XMStoreFloat4x4( &acquiredTransform,transform_in );
 }
 
 void Node::AddChild( std::unique_ptr<Node> pNode ) noexcept( !IS_DEBUG )
@@ -90,27 +111,32 @@ public:
 		if ( ImGui::Begin( windowName ) )
 		{
 			ImGui::Columns( 2 );
-			root.ShowTree();
+			int trackedIndex = 0;
+			root.ShowTree( trackedIndex,selectedIndex,pSelectedNode );
 
 			ImGui::NextColumn();
-			ImGui::SliderFloat( "X",&modelPosition.pos.x,-20.0f,20.0f,"%.2f" );
-			ImGui::SliderFloat( "Y",&modelPosition.pos.y,-20.0f,20.0f,"%.2f" );
-			ImGui::SliderFloat( "Z",&modelPosition.pos.z,-20.0f,20.0f,"%.2f" );
+			if ( pSelectedNode )
+			{
+				assert( selectedIndex == std::nullopt );
+				auto& meshTransformation = meshTransformMap[*selectedIndex];
+				ImGui::SliderFloat( "X",&meshTransformation.pos.x,-20.0f,20.0f,"%.2f" );
+				ImGui::SliderFloat( "Y",&meshTransformation.pos.y,-20.0f,20.0f,"%.2f" );
+				ImGui::SliderFloat( "Z",&meshTransformation.pos.z,-20.0f,20.0f,"%.2f" );
 
-			ImGui::SliderAngle( "Roll",&modelPosition.angle.roll,-180.0f,180.0f,"%.1f deg" );
-			ImGui::SliderAngle( "Pitch",&modelPosition.angle.pitch,-180.0f,180.0f,"%.1f deg" );
-			ImGui::SliderAngle( "Yaw",&modelPosition.angle.yaw,-180.0f,180.0f,"%.1f deg" );
+				ImGui::SliderAngle( "Roll",&meshTransformation.angle.roll,-180.0f,180.0f,"%.1f deg" );
+				ImGui::SliderAngle( "Pitch",&meshTransformation.angle.pitch,-180.0f,180.0f,"%.1f deg" );
+				ImGui::SliderAngle( "Yaw",&meshTransformation.angle.yaw,-180.0f,180.0f,"%.1f deg" );
+
+				pSelectedNode->SetAcquiredTransform(
+					dx::XMMatrixRotationRollPitchYaw( meshTransformation.angle.pitch,meshTransformation.angle.yaw,meshTransformation.angle.roll ) *
+					dx::XMMatrixTranslation( meshTransformation.pos.x,meshTransformation.pos.y,meshTransformation.pos.z )
+				);
+			}
 		}
 		ImGui::End();
 	}
-
-	DirectX::XMMATRIX GetTransformXM() const noexcept
-	{
-		return DirectX::XMMatrixRotationRollPitchYaw( modelPosition.angle.pitch,modelPosition.angle.yaw,modelPosition.angle.roll ) *
-			DirectX::XMMatrixTranslation( modelPosition.pos.x,modelPosition.pos.y,modelPosition.pos.z );
-	}
 private:
-	struct
+	struct TransformationParams
 	{
 		DirectX::XMFLOAT3 pos = {};
 		struct
@@ -119,7 +145,10 @@ private:
 			float yaw = 0.0f;
 			float roll = 0.0f;
 		} angle;
-	} modelPosition;
+	};
+	std::unordered_map<int,TransformationParams> meshTransformMap;
+	std::optional<int> selectedIndex;
+	Node* pSelectedNode = nullptr;
 };
 
 Model::Model( Graphics& gfx,const std::string& file )
@@ -220,9 +249,9 @@ std::unique_ptr<Node> Model::ParseNode( const aiNode* pNode ) noexcept( !IS_DEBU
 	return std::move( node );
 }
 
-void Model::Draw( Graphics& gfx ) const noexcept( !IS_DEBUG )
+void Model::Draw( Graphics& gfx,DirectX::FXMMATRIX transform ) const noexcept( !IS_DEBUG )
 {
-	pRoot->Draw( gfx,pModelWindow->GetTransformXM() );
+	pRoot->Draw( gfx,transform );
 }
 
 void Model::SpawnControlWindow() const noexcept( !IS_DEBUG )
