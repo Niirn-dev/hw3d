@@ -6,6 +6,7 @@
 #include "Vertex.h"
 #include "imgui\imgui.h"
 #include <unordered_map>
+#include <sstream>
 
 namespace dx = DirectX;
 
@@ -160,8 +161,13 @@ Model::Model( Graphics& gfx,const std::string& file )
 		file,
 		aiProcess_Triangulate | aiProcess_JoinIdenticalVertices
 	);
-	assert( pScene->mNumMeshes != 0 );
+	// do the error handling for the assimp
+	if ( pScene == nullptr )
+	{
+		throw ModelException( __LINE__,__FILE__,imp.GetErrorString() );
+	}
 
+	assert( pScene->mNumMeshes != 0 );
 	for ( size_t i = 0; i < pScene->mNumMeshes; ++i )
 	{
 		meshPtrs.push_back( ParseMesh( gfx,pScene->mMeshes[i] ) );
@@ -258,3 +264,25 @@ void Model::SpawnControlWindow() const noexcept( !IS_DEBUG )
 {
 	pModelWindow->Show( "Model window",*pRoot );
 }
+
+/*********** EXCEPTION DIFINITIONS ***********/
+Model::ModelException::ModelException( int line,const char* file,const std::string& info ) noexcept
+	:
+	ChiliException( line,file ),
+	info( info )
+{}
+
+const char* Model::ModelException::what() const noexcept
+{
+	std::ostringstream oss;
+	oss << GetType() << std::endl
+		<< "[Error info] " << info << std::endl;
+	whatBuffer = oss.str();
+	return whatBuffer.c_str();
+}
+
+const char* Model::ModelException::GetType() const noexcept
+{
+	return "Assimp Load Exception";
+}
+/********* EXCEPTION DIFINITIONS END *********/

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DrawableBase.h"
+#include "ChiliException.h"
 #include <optional>
 
 class Mesh : public DrawableBase<Mesh>
@@ -33,6 +34,17 @@ private:
 
 class Model
 {
+	class ModelException : public ChiliException
+	{
+		using ChiliException::ChiliException;
+	public:
+		ModelException( int line,const char* file,const std::string& info ) noexcept;
+		const char* what() const noexcept override;
+		const char* GetType() const noexcept;
+
+	private:
+		std::string info;
+	};
 public:
 	Model( Graphics& gfx,const std::string& file );
 	~Model();
