@@ -77,13 +77,16 @@ void Node::ShowTree( int& trackedIndex,std::optional<int>& selectedIndex,Node*& 
 		( selectedIndex.value_or( -1 ) == curIndex ? ImGuiTreeNodeFlags_Selected : 0 ) |
 		( childPtrs.empty() ? ImGuiTreeNodeFlags_Leaf : 0 );
 
-	if ( ImGui::TreeNodeEx( (void*)(intptr_t)curIndex,treeFlags,name.c_str() ) )
+	const auto expanded = ImGui::TreeNodeEx( (void*)(intptr_t)curIndex,treeFlags,name.c_str() );
+
+	if ( ImGui::IsItemClicked() )
 	{
-		if ( ImGui::IsItemClicked() )
-		{
-			selectedIndex = curIndex;
-			pSelectedNode = const_cast<Node*>( this );
-		}
+		selectedIndex = curIndex;
+		pSelectedNode = const_cast<Node*>( this );
+	}
+
+	if ( expanded )
+	{
 		for ( auto& c : childPtrs )
 		{
 			c->ShowTree( trackedIndex,selectedIndex,pSelectedNode );
