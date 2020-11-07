@@ -80,7 +80,7 @@ void Node::ShowTree( int& trackedIndex,std::optional<int>& selectedIndex,Node*& 
 	{
 		if ( ImGui::IsItemClicked() )
 		{
-			*selectedIndex = curIndex;
+			selectedIndex = curIndex;
 			pSelectedNode = const_cast<Node*>( this );
 		}
 		for ( auto& c : childPtrs )
@@ -117,7 +117,7 @@ public:
 			ImGui::NextColumn();
 			if ( pSelectedNode )
 			{
-				assert( selectedIndex == std::nullopt );
+				assert( selectedIndex != std::nullopt );
 				auto& meshTransformation = meshTransformMap[*selectedIndex];
 				ImGui::SliderFloat( "X",&meshTransformation.pos.x,-20.0f,20.0f,"%.2f" );
 				ImGui::SliderFloat( "Y",&meshTransformation.pos.y,-20.0f,20.0f,"%.2f" );
