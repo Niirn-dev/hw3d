@@ -202,6 +202,25 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 		PostQuitMessage( 0 );
 		// return without going through the default proc because the window is going to be destroyed in the destructor
 		return 0;
+	case WM_ACTIVATE:
+		if ( !isCursorEnabled )
+		{
+			OutputDebugString( "activate " );
+			// reconfine cursor when window is activated
+			if ( wParam & ( WA_ACTIVE | WA_CLICKACTIVE ) )
+			{
+				OutputDebugString( "=> confine\n" );
+				ConfineCursor();
+				HideCursor();
+			}
+			else // free cursor if window is deactivated
+			{
+				OutputDebugString( "=> free\n" );
+				FreeCursor();
+				ShowCursor();
+			}
+		}
+		break;
 	/************* KEYBOARD MESSAGES *************/
 	case WM_SYSKEYDOWN:
 		[[fallthrough]];
