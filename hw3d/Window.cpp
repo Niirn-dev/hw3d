@@ -108,26 +108,38 @@ std::optional<int> Window::ProcessMessages() noexcept
 	return std::nullopt;
 }
 
-void Window::EnableCursor() noexcept
+void Window::EnableCursor()
 {
 	ShowCursor();
+	EnableImguiMouse();
 	isCursorEnabled = true;
 }
 
-void Window::DisableCursor() noexcept
+void Window::DisableCursor()
 {
 	HideCursor();
+	DisableImguiMouse();
 	isCursorEnabled = false;
 }
 
-void Window::ShowCursor() const noexcept
+void Window::ShowCursor()
 {
 	while ( ::ShowCursor( TRUE ) < 0 );
 }
 
-void Window::HideCursor() const noexcept
+void Window::HideCursor()
 {
 	while ( ::ShowCursor( FALSE ) >= 0 );
+}
+
+void Window::DisableImguiMouse()
+{
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
+}
+
+void Window::EnableImguiMouse()
+{
+	ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
 }
 
 LRESULT Window::HangleMsgSetup( _In_ HWND hWnd,_In_ UINT msg,_In_ WPARAM wParam,_In_ LPARAM lParam ) noexcept
