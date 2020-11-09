@@ -53,10 +53,12 @@ void App::DoFrame()
 			if ( wnd.Gfx().IsImguiEnabled() )
 			{
 				wnd.Gfx().DisableImgui();
+				wnd.DisableCursor();
 			}
 			else
 			{
 				wnd.Gfx().EnableImgui();
+				wnd.EnableCursor();
 			}
 		}
 	}

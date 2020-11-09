@@ -108,6 +108,28 @@ std::optional<int> Window::ProcessMessages() noexcept
 	return std::nullopt;
 }
 
+void Window::EnableCursor() noexcept
+{
+	ShowCursor();
+	isCursorEnabled = true;
+}
+
+void Window::DisableCursor() noexcept
+{
+	HideCursor();
+	isCursorEnabled = false;
+}
+
+void Window::ShowCursor() const noexcept
+{
+	while ( ::ShowCursor( TRUE ) < 0 );
+}
+
+void Window::HideCursor() const noexcept
+{
+	while ( ::ShowCursor( FALSE ) >= 0 );
+}
+
 LRESULT Window::HangleMsgSetup( _In_ HWND hWnd,_In_ UINT msg,_In_ WPARAM wParam,_In_ LPARAM lParam ) noexcept
 {
 	// if window is created

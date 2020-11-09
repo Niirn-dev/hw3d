@@ -58,7 +58,12 @@ public:
 	Window& operator=( const Window& ) = delete;
 	void SetTitle( const std::string& title ) const;
 	static std::optional<int> ProcessMessages() noexcept;
+	void EnableCursor() noexcept;
+	void DisableCursor() noexcept;
 private:
+	void ShowCursor() const noexcept;
+	void HideCursor() const noexcept;
+
 	static LRESULT CALLBACK HangleMsgSetup(
 		_In_ HWND	hWnd,
 		_In_ UINT	msg,
@@ -86,6 +91,7 @@ private:
 	int height;
 	HWND hWnd = nullptr;
 	std::unique_ptr<Graphics> pGfx;
+	bool isCursorEnabled = true;
 private:
 	bool IsInClientRegion( int x,int y );
 };
