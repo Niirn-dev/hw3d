@@ -58,13 +58,15 @@ public:
 	Window& operator=( const Window& ) = delete;
 	void SetTitle( const std::string& title ) const;
 	static std::optional<int> ProcessMessages() noexcept;
-	void EnableCursor();
-	void DisableCursor();
+	void EnableCursor() noexcept;
+	void DisableCursor() noexcept;
 private:
-	void ShowCursor();
-	void HideCursor();
-	void DisableImguiMouse();
-	void EnableImguiMouse();
+	void ConfineCursor() noexcept;
+	void FreeCursor() noexcept;
+	void ShowCursor() noexcept;
+	void HideCursor() noexcept;
+	void DisableImguiMouse() noexcept;
+	void EnableImguiMouse() noexcept;
 
 	static LRESULT CALLBACK HangleMsgSetup(
 		_In_ HWND	hWnd,
