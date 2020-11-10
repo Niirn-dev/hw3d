@@ -34,7 +34,7 @@ float4 main(float3 worldViewPos : Position, float3 n : Normal, float2 tc : TexCo
     // reflection vector
     const float3 r = 2.0f * n * dot(toL, n) - toL;
     // specular intensity
-    const float specular = att * diffuseColor * diffuseIntensity * specularIntensity * max(0.0f, pow(dot(normalize(-worldViewPos), normalize(r)), specularPower));
+    const float3 specular = att * diffuseColor * diffuseIntensity * specularIntensity * max(0.0f, pow(dot(normalize(-worldViewPos), normalize(r)), specularPower));
     
     // final color
     return saturate(float4((diffuse + ambient + specular), 1.0f) * tex.Sample(smplr, tc));
