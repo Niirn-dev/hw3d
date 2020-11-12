@@ -91,6 +91,23 @@ bool Mouse::IsEmpty() const noexcept
     return buffer.empty();
 }
 
+std::optional<Mouse::RawInput> Mouse::ReadRawDelta() noexcept
+{
+    if ( IsRawDeltaEmpty() )
+    {
+        return std::nullopt;
+    }
+
+    const auto d = rawDeltaBuffer.front();
+    rawDeltaBuffer.pop();
+    return d;
+}
+
+bool Mouse::IsRawDeltaEmpty() const noexcept
+{
+    return rawDeltaBuffer.empty();
+}
+
 void Mouse::OnLeftPress( int x_in,int y_in ) noexcept
 {
     leftIsPressed = true;
@@ -176,10 +193,24 @@ void Mouse::OnMouseLeave() noexcept
     TrimBuffer();
 }
 
+void Mouse::OnRawDelta( int dx,int dy ) noexcept
+{
+    rawDeltaBuffer.push( { dx,dy } );
+    TrimRawDeltaBuffer();
+}
+
 void Mouse::TrimBuffer() noexcept
 {
     while ( buffer.size() > bufferSize )
     {
         buffer.pop();
+    }
+}
+
+void Mouse::TrimRawDeltaBuffer() noexcept
+{
+    while ( rawDeltaBuffer.size() > bufferSize )
+    {
+        rawDeltaBuffer.pop();
     }
 }

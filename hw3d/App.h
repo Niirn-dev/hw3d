@@ -23,6 +23,9 @@ public:
 private:
 	void DoFrame();
 	void SpawnGuiElements();
+	void SpawnRawInputWindow();
+private:
+	int x = 0,y = 0;
 private:
 	static constexpr int wndWidthDefault = 800;
 	static constexpr int wndHeightDefault = 600;

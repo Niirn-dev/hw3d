@@ -64,6 +64,7 @@ void App::DoFrame()
 	}
 
 	SpawnGuiElements();
+	SpawnRawInputWindow();
 
 	wnd.Gfx().EndFrame();
 }
@@ -73,4 +74,19 @@ void App::SpawnGuiElements()
 	cam.SpawnControlWindow();
 	light.SpawnControlWindow();
 	nano.SpawnControlWindow();
+}
+
+void App::SpawnRawInputWindow()
+{
+	while ( const auto d = wnd.mouse.ReadRawDelta() )
+	{
+		x += d->x;
+		y += d->y;
+	}
+
+	if ( ImGui::Begin( "Raw input" ) )
+	{
+		ImGui::Text( "Tally: (%d,%d)",x,y );
+	}
+	ImGui::End();
 }
