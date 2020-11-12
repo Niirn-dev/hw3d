@@ -76,6 +76,16 @@ Window::Window( int width,int height,const char* name )
 	ImGui_ImplWin32_Init( hWnd );
 	// initialize graphics
 	pGfx = std::make_unique<Graphics>( hWnd,this->width,this->height );
+	// add mouse raw input
+	RAWINPUTDEVICE rid = {};
+	rid.usUsagePage = 0x01;
+	rid.usUsage = 0x02;
+	rid.dwFlags = 0;
+	rid.hwndTarget = nullptr;
+	if ( RegisterRawInputDevices( &rid,1u,sizeof( rid ) ) == FALSE )
+	{
+		throw CHWND_LAST_EXCEPT();
+	}
 }
 
 Window::~Window()
@@ -362,6 +372,46 @@ LRESULT Window::HandleMsg( _In_ HWND hWnd_in,_In_ UINT msg,_In_ WPARAM wParam,_I
 	}
 		break;
 	/************ END MOUSE MESSAGES *************/
+
+	/************ RAW INPUT MESSAGES *************/
+	case WM_INPUT:
+	{
+		UINT size = 0u;
+		// get the size of the raw input
+		if ( GetRawInputData( 
+			reinterpret_cast<HRAWINPUT>( lParam ),
+			RID_INPUT,
+			nullptr,
+			&size,
+			sizeof( RAWINPUTHEADER ) ) == -1 )
+		{
+			// bail if getting the size fails
+			break;
+		}
+
+		rawBuffer.resize( size );
+		// try to get the actual raw data
+		if ( GetRawInputData(
+			reinterpret_cast<HRAWINPUT>( lParam ),
+			RID_INPUT,
+			rawBuffer.data(),
+			&size,
+			sizeof( RAWINPUTHEADER ) ) != size )
+		{
+			// bail if the size doesn't match up
+			break;
+		}
+
+		const auto& ri = reinterpret_cast<const RAWINPUT&>( *rawBuffer.data() );
+		// only process mouse input with non-zero delta values
+		if ( ri.header.dwType == RIM_TYPEMOUSE &&
+			( ri.data.mouse.lLastX != 0 || ri.data.mouse.lLastY != 0 ) )
+		{
+			mouse.OnRawDelta( ri.data.mouse.lLastX,ri.data.mouse.lLastY );
+		}
+	}
+	break;
+	/********** END RAW INPUT MESSAGES ***********/
 	}
 	// invoke default window proc for all of the unhandled messages
 	return DefWindowProc( hWnd_in,msg,wParam,lParam );

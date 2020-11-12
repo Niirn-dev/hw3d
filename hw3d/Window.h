@@ -96,6 +96,7 @@ private:
 	HWND hWnd = nullptr;
 	std::unique_ptr<Graphics> pGfx;
 	bool isCursorEnabled = true;
+	std::vector<BYTE> rawBuffer;
 private:
 	bool IsInClientRegion( int x,int y );
 };
