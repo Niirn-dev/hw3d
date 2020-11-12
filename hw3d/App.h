@@ -16,10 +16,10 @@ public:
 	~App();
 private:
 	void DoFrame();
+	void DoCameraControls( float dt ) noexcept;
 	void ShowImguiDemoWindow();
-	void ShowRawInputWindow();
 private:
-	int x = 0,y = 0;
+	bool show_demo_window = false;
 	ImguiManager imgui;
 	Window wnd;
 	ChiliTimer timer;

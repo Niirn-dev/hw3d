@@ -21,6 +21,12 @@ App::App()
 void App::DoFrame()
 {
 	const auto dt = timer.Mark() * speed_factor;
+
+	if ( !wnd.CursorEnabled() )
+	{
+		DoCameraControls( dt );
+	}
+
 	wnd.Gfx().BeginFrame( 0.07f,0.0f,0.12f );
 	wnd.Gfx().SetCamera( cam.GetMatrix() );
 	light.Bind( wnd.Gfx(),cam.GetMatrix() );
@@ -30,17 +36,27 @@ void App::DoFrame()
 
 	while( const auto e = wnd.kbd.ReadKey() )
 	{
-		if( e->IsPress() && e->GetCode() == VK_INSERT )
+		if( e->IsPress() )
 		{
-			if( wnd.CursorEnabled() )
+			switch ( e->GetCode() )
 			{
-				wnd.DisableCursor();
-				wnd.mouse.EnableRaw();
-			}
-			else
-			{
-				wnd.EnableCursor();
-				wnd.mouse.DisableRaw();
+			case 'I':
+				if ( wnd.CursorEnabled() )
+				{
+					wnd.DisableCursor();
+					wnd.mouse.EnableRaw();
+				}
+				else
+				{
+					wnd.EnableCursor();
+					wnd.mouse.DisableRaw();
+				}
+				break;
+			case VK_F1:
+				show_demo_window = true;
+				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -50,34 +66,56 @@ void App::DoFrame()
 	light.SpawnControlWindow();
 	ShowImguiDemoWindow();
 	nano.ShowWindow();
-	ShowRawInputWindow();
 
 	// present
 	wnd.Gfx().EndFrame();
 }
 
+void App::DoCameraControls( float dt ) noexcept
+{
+	// do rotation
+	float dx = 0.0f,dy = 0.0f;
+	assert( wnd.mouse.RawEnabled() );
+	while ( const auto d = wnd.mouse.ReadRawDelta() )
+	{
+		dx += (float)d->x;
+		dy += (float)d->y;
+	}
+	cam.Rotate( dx * dt,dy * dt );
+
+	// do movement
+	if ( wnd.kbd.KeyIsPressed( 'W' ) )
+	{
+		cam.Translate( dx::XMFLOAT3{ 0.0f,0.0f,dt } );
+	}
+	if ( wnd.kbd.KeyIsPressed( 'S' ) )
+	{
+		cam.Translate( dx::XMFLOAT3{ 0.0f,0.0f,-dt } );
+	}
+	if ( wnd.kbd.KeyIsPressed( 'A' ) )
+	{
+		cam.Translate( dx::XMFLOAT3{ -dt,0.0f,0.0f } );
+	}
+	if ( wnd.kbd.KeyIsPressed( 'D' ) )
+	{
+		cam.Translate( dx::XMFLOAT3{ dt,0.0f,0.0f } );
+	}
+	if ( wnd.kbd.KeyIsPressed( 'R' ) )
+	{
+		cam.Translate( dx::XMFLOAT3{ 0.0f,dt,0.0f } );
+	}
+	if ( wnd.kbd.KeyIsPressed( 'F' ) )
+	{
+		cam.Translate( dx::XMFLOAT3{ 0.0f,-dt,0.0f } );
+	}
+}
+
 void App::ShowImguiDemoWindow()
 {
-	static bool show_demo_window = true;
 	if( show_demo_window )
 	{
 		ImGui::ShowDemoWindow( &show_demo_window );
 	}
-}
-
-void App::ShowRawInputWindow()
-{
-	while( const auto d = wnd.mouse.ReadRawDelta() )
-	{
-		x += d->x;
-		y += d->y;
-	}
-	if( ImGui::Begin( "Raw Input" ) )
-	{
-		ImGui::Text( "Tally: (%d,%d)",x,y );
-		ImGui::Text( "Cursor: %s",wnd.CursorEnabled()?"enabled":"disabled" );
-	}
-	ImGui::End();
 }
 
 App::~App()
