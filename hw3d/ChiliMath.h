@@ -11,11 +11,17 @@ constexpr auto sq( const T& x )
 }
 
 template<typename T>
+constexpr T sign( T val )
+{
+	return static_cast<T>( ( val > (T)0.0 ) - ( val < (T)0.0 ) );
+}
+
+template<typename T>
 T wrap_angle( T theta )
 {
-	const T modded = fmod( theta,(T)2.0 * (T)PI_D );
-	return (modded > (T)PI_D) ?
-		(modded - (T)2.0 * (T)PI_D) :
+	const T modded = std::fmodf( theta,(T)2.0 * (T)PI_D );
+	return (std::abs( modded ) > (T)PI_D) ?
+		(modded - (T)2.0 * (T)PI_D * sign( modded )) :
 		modded;
 }
 
