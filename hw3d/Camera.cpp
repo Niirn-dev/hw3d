@@ -17,7 +17,7 @@ DirectX::XMMATRIX Camera::GetMatrix() const noexcept
 		vecPos, 
 		dx::XMVector3Transform( 
 			dx::XMVectorSet( 0.0f,0.0f,1.0f,0.0f ),
-			dx::XMMatrixRotationRollPitchYaw( -pitch,-yaw,0.0f )
+			dx::XMMatrixRotationRollPitchYaw( pitch,yaw,0.0f )
 		)
 	);
 
@@ -58,7 +58,7 @@ void Camera::Translate( DirectX::XMFLOAT3 translation ) noexcept
 {
 	dx::XMStoreFloat3( &translation,dx::XMVector3Transform(
 		dx::XMLoadFloat3( &translation ),
-		dx::XMMatrixRotationRollPitchYaw( -pitch,-yaw,0.0f ) *
+		dx::XMMatrixRotationRollPitchYaw( pitch,yaw,0.0f ) *
 		dx::XMMatrixScaling( travelSpeed,travelSpeed,travelSpeed )
 	) );
 
@@ -71,6 +71,6 @@ void Camera::Translate( DirectX::XMFLOAT3 translation ) noexcept
 
 void Camera::Rotate( float dx,float dy ) noexcept
 {
-	yaw = wrap_angle( yaw - dx * rotationSpeed );
-	pitch = std::clamp( pitch - dy * rotationSpeed,-maxPitch,maxPitch );
+	yaw = wrap_angle( yaw + dx * rotationSpeed );
+	pitch = std::clamp( pitch + dy * rotationSpeed,-maxPitch,maxPitch );
 }
