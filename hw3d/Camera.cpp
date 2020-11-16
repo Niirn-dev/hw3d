@@ -72,5 +72,5 @@ void Camera::Translate( DirectX::XMFLOAT3 translation ) noexcept
 void Camera::Rotate( float dx,float dy ) noexcept
 {
 	yaw = wrap_angle( yaw + dx * rotationSpeed );
-	pitch = std::clamp( pitch + dy * rotationSpeed,-maxPitch,maxPitch );
+	pitch = std::clamp( pitch + dy * rotationSpeed,-to_rad( maxPitch ),to_rad(maxPitch) );
 }
