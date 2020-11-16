@@ -4,6 +4,11 @@
 
 namespace dx = DirectX;
 
+Camera::Camera() noexcept
+{
+	Reset();
+}
+
 DirectX::XMMATRIX Camera::GetMatrix() const noexcept
 {
 
@@ -44,7 +49,7 @@ void Camera::SpawnControlWindow() noexcept
 
 void Camera::Reset() noexcept
 {
-	dx::XMStoreFloat3( &pos,{ 0.0f,1.0f,-10.0f } );
+	dx::XMStoreFloat3( &pos,{ 0.0f,9.0f,-20.0f } );
 	pitch = 0.0f;
 	yaw = 0.0f;
 }

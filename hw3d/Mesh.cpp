@@ -213,6 +213,9 @@ Model::Model( Graphics& gfx,const std::string fileName )
 	}
 
 	pRoot = ParseNode( *pScene->mRootNode );
+
+	// hardcode default model transform for now
+	dx::XMStoreFloat4x4( &transform,dx::XMMatrixRotationRollPitchYaw( -3.14159f / 2.0f,0.0f,0.0f ) );
 }
 
 void Model::Draw( Graphics& gfx ) const noxnd
@@ -221,7 +224,7 @@ void Model::Draw( Graphics& gfx ) const noxnd
 	{
 		node->SetAppliedTransform( pWindow->GetTransform() );
 	}
-	pRoot->Draw( gfx,dx::XMMatrixIdentity() );
+	pRoot->Draw( gfx,dx::XMLoadFloat4x4( &transform ) );
 }
 
 void Model::ShowWindow( const char* windowName ) noexcept
