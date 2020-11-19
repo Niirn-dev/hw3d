@@ -268,6 +268,7 @@ std::unique_ptr<Mesh> Model::ParseMesh( Graphics& gfx,const aiMesh& mesh,const a
 
 	std::vector<std::unique_ptr<Bind::Bindable>> bindablePtrs;
 
+	bool hasSpec = false;
 	if ( mesh.mMaterialIndex >= 0 )
 	{
 		using namespace std::string_literals;
@@ -276,6 +277,12 @@ std::unique_ptr<Mesh> Model::ParseMesh( Graphics& gfx,const aiMesh& mesh,const a
 		material.GetTexture( aiTextureType_DIFFUSE,0u,&texFile );
 		bindablePtrs.push_back( std::make_unique<Bind::Texture>( gfx,Surface::FromFile( "Models\\nano_textured\\"s + texFile.C_Str() ) ) );
 		bindablePtrs.push_back( std::make_unique<Bind::Sampler>( gfx ) );
+
+		if ( material.GetTexture( aiTextureType_SPECULAR,0u,&texFile ) == aiReturn_SUCCESS )
+		{
+			bindablePtrs.push_back( std::make_unique<Bind::Texture>( gfx,Surface::FromFile( "Models\\nano_textured\\"s + texFile.C_Str() ),1u ) );
+			hasSpec = true;
+		}
 	}
 
 	bindablePtrs.push_back( std::make_unique<Bind::VertexBuffer>( gfx,vbuf ) );
@@ -286,17 +293,24 @@ std::unique_ptr<Mesh> Model::ParseMesh( Graphics& gfx,const aiMesh& mesh,const a
 	auto pvsbc = pvs->GetBytecode();
 	bindablePtrs.push_back( std::move( pvs ) );
 
-	bindablePtrs.push_back( std::make_unique<Bind::PixelShader>( gfx,L"PhongPS.cso" ) );
-
 	bindablePtrs.push_back( std::make_unique<Bind::InputLayout>( gfx,vbuf.GetLayout().GetD3DLayout(),pvsbc ) );
 
-	struct PSMaterialConstant
+	if ( hasSpec )
 	{
-		float specularIntensity = 0.6f;
-		float specularPower = 30.0f;
-		float padding[2];
-	} pmc;
-	bindablePtrs.push_back( std::make_unique<Bind::PixelConstantBuffer<PSMaterialConstant>>( gfx,pmc,1u ) );
+		bindablePtrs.push_back( std::make_unique<Bind::PixelShader>( gfx,L"PhongPSSpec.cso" ) );
+	}
+	else
+	{
+		bindablePtrs.push_back( std::make_unique<Bind::PixelShader>( gfx,L"PhongPS.cso" ) );
+
+		struct PSMaterialConstant
+		{
+			float specularIntensity = 0.6f;
+			float specularPower = 30.0f;
+			float padding[2];
+		} pmc;
+		bindablePtrs.push_back( std::make_unique<Bind::PixelConstantBuffer<PSMaterialConstant>>( gfx,pmc,1u ) );
+	}
 
 	return std::make_unique<Mesh>( gfx,std::move( bindablePtrs ) );
 }
