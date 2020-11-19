@@ -29,7 +29,7 @@ float4 main( float3 worldPos : Position,float3 n : Normal,float2 tc : Texcoord )
 	// get specular parameters from specular map
 	const float4 specSample = specMap.Sample(smplr, tc);
 	const float3 specColorIntensity = specSample.rgb;
-	const float specPower = specSample.a;
+	const float specPower = pow(2.0f, 10.0f * specSample.a);
 	// calculate specular intensity based on angle between viewing vector and reflection vector, narrow with power function
 	const float3 specular = att * specColorIntensity * pow( max( 0.0f,dot( normalize( -r ),normalize( worldPos ) ) ),specPower );
 	// final color
