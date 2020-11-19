@@ -205,7 +205,7 @@ Model::Model( Graphics& gfx,const std::string fileName )
 
 	for( size_t i = 0; i < pScene->mNumMeshes; i++ )
 	{
-		meshPtrs.push_back( ParseMesh( gfx,*pScene->mMeshes[i] ) );
+		meshPtrs.push_back( ParseMesh( gfx,*pScene->mMeshes[i],pScene->mMaterials ) );
 	}
 
 	int currId = 0;
@@ -232,7 +232,7 @@ void Model::ShowWindow( const char* windowName ) noexcept
 Model::~Model() noexcept
 {}
 
-std::unique_ptr<Mesh> Model::ParseMesh( Graphics& gfx,const aiMesh& mesh )
+std::unique_ptr<Mesh> Model::ParseMesh( Graphics& gfx,const aiMesh& mesh,const aiMaterial* const* pMaterial )
 {
 	namespace dx = DirectX;
 	using Dvtx::VertexLayout;
@@ -249,6 +249,14 @@ std::unique_ptr<Mesh> Model::ParseMesh( Graphics& gfx,const aiMesh& mesh )
 			*reinterpret_cast<dx::XMFLOAT3*>(&mesh.mVertices[i]),
 			*reinterpret_cast<dx::XMFLOAT3*>(&mesh.mNormals[i])
 		);
+	}
+
+	assert( mesh.mMaterialIndex >= 0 );
+	auto& material = *pMaterial[mesh.mMaterialIndex];
+	for ( int i = 0; i < material.mNumProperties; ++i )
+	{
+		auto prop = material.mProperties[i];
+		auto q = 1231;
 	}
 
 	std::vector<unsigned short> indices;

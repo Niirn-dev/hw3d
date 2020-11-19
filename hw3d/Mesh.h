@@ -62,7 +62,7 @@ public:
 	void ShowWindow( const char* windowName = nullptr ) noexcept;
 	~Model() noexcept;
 private:
-	static std::unique_ptr<Mesh> ParseMesh( Graphics& gfx,const aiMesh& mesh );
+	static std::unique_ptr<Mesh> ParseMesh( Graphics& gfx,const aiMesh& mesh,const aiMaterial* const* pMaterial );
 	std::unique_ptr<Node> ParseNode( int& id,const aiNode& node ) noexcept;
 private:
 	std::unique_ptr<Node> pRoot;
