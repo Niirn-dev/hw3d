@@ -1,13 +1,11 @@
 #pragma once
 #include "DrawableBase.h"
-#include "BindableCommon.h"
 #include "Vertex.h"
 #include <optional>
+#include "ConditionalNoexcept.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include "ConditionalNoexcept.h"
-
 
 class ModelException : public ChiliException
 {

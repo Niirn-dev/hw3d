@@ -1,7 +1,9 @@
 #include "Mesh.h"
 #include "imgui/imgui.h"
+#include "BindableCommon.h"
 #include <unordered_map>
 #include <sstream>
+#include "Surface.h"
 
 namespace dx = DirectX;
 
@@ -212,7 +214,7 @@ Model::Model( Graphics& gfx,const std::string fileName )
 	pRoot = ParseNode( currId,*pScene->mRootNode );
 
 	// hardcode default model transform for now
-	dx::XMStoreFloat4x4( &transform,dx::XMMatrixRotationRollPitchYaw( -3.14159f / 2.0f,0.0f,0.0f ) );
+	dx::XMStoreFloat4x4( &transform,dx::XMMatrixIdentity() );
 }
 
 void Model::Draw( Graphics& gfx ) const noxnd
@@ -241,22 +243,16 @@ std::unique_ptr<Mesh> Model::ParseMesh( Graphics& gfx,const aiMesh& mesh,const a
 		VertexLayout{}
 		.Append( VertexLayout::Position3D )
 		.Append( VertexLayout::Normal )
+		.Append( VertexLayout::Texture2D )
 	) );
 
 	for( unsigned int i = 0; i < mesh.mNumVertices; i++ )
 	{
 		vbuf.EmplaceBack(
 			*reinterpret_cast<dx::XMFLOAT3*>(&mesh.mVertices[i]),
-			*reinterpret_cast<dx::XMFLOAT3*>(&mesh.mNormals[i])
+			*reinterpret_cast<dx::XMFLOAT3*>(&mesh.mNormals[i]),
+			*reinterpret_cast<dx::XMFLOAT2*>(&mesh.mTextureCoords[0][i])
 		);
-	}
-
-	assert( mesh.mMaterialIndex >= 0 );
-	auto& material = *pMaterial[mesh.mMaterialIndex];
-	for ( int i = 0; i < material.mNumProperties; ++i )
-	{
-		auto prop = material.mProperties[i];
-		auto q = 1231;
 	}
 
 	std::vector<unsigned short> indices;
@@ -271,6 +267,16 @@ std::unique_ptr<Mesh> Model::ParseMesh( Graphics& gfx,const aiMesh& mesh,const a
 	}
 
 	std::vector<std::unique_ptr<Bind::Bindable>> bindablePtrs;
+
+	if ( mesh.mMaterialIndex >= 0 )
+	{
+		using namespace std::string_literals;
+		auto& material = *pMaterial[mesh.mMaterialIndex];
+		aiString texFile;
+		material.GetTexture( aiTextureType_DIFFUSE,0u,&texFile );
+		bindablePtrs.push_back( std::make_unique<Bind::Texture>( gfx,Surface::FromFile( "Models\\nano_textured\\"s + texFile.C_Str() ) ) );
+		bindablePtrs.push_back( std::make_unique<Bind::Sampler>( gfx ) );
+	}
 
 	bindablePtrs.push_back( std::make_unique<Bind::VertexBuffer>( gfx,vbuf ) );
 
