@@ -11,10 +11,6 @@ void Drawable::Draw( Graphics& gfx ) const noxnd
 	{
 		b->Bind( gfx );
 	}
-	for( auto& b : GetStaticBinds() )
-	{
-		b->Bind( gfx );
-	}
 	gfx.DrawIndexed( pIndexBuffer->GetCount() );
 }
 

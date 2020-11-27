@@ -36,10 +36,7 @@ const std::string& ModelException::GetNote() const noexcept
 // Mesh
 Mesh::Mesh( Graphics& gfx,std::vector<std::unique_ptr<Bind::Bindable>> bindPtrs )
 {
-	if( !IsStaticInitialized() )
-	{
-		AddStaticBind( std::make_unique<Bind::Topology>( gfx,D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST ) );
-	}
+	AddBind( std::make_unique<Bind::Topology>( gfx,D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST ) );
 
 	for( auto& pb : bindPtrs )
 	{

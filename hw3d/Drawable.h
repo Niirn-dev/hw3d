@@ -11,8 +11,6 @@ namespace Bind
 
 class Drawable
 {
-	template<class T>
-	friend class DrawableBase;
 public:
 	Drawable() = default;
 	Drawable( const Drawable& ) = delete;
@@ -36,8 +34,6 @@ protected:
 	}
 	void AddBind( std::unique_ptr<Bind::Bindable> bind ) noxnd;
 	void AddIndexBuffer( std::unique_ptr<Bind::IndexBuffer> ibuf ) noxnd;
-private:
-	virtual const std::vector<std::unique_ptr<Bind::Bindable>>& GetStaticBinds() const noexcept = 0;
 private:
 	const Bind::IndexBuffer* pIndexBuffer = nullptr;
 	std::vector<std::unique_ptr<Bind::Bindable>> binds;
