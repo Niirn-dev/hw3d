@@ -9,11 +9,7 @@ SolidSphere::SolidSphere( Graphics& gfx,float radius )
 	using namespace Bind;
 	namespace dx = DirectX;
 
-	struct Vertex
-	{
-		dx::XMFLOAT3 pos;
-	};
-	auto model = Sphere::Make<Vertex>();
+	auto model = Sphere::Make();
 	model.Transform( dx::XMMatrixScaling( radius,radius,radius ) );
 	AddBind( std::make_unique<VertexBuffer>( gfx,model.vertices ) );
 	AddIndexBuffer( std::make_unique<IndexBuffer>( gfx,model.indices ) );

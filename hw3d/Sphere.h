@@ -6,8 +6,7 @@
 class Sphere
 {
 public:
-	template<class V>
-	static IndexedTriangleList<V> MakeTesselated( int latDiv,int longDiv )
+	static IndexedTriangleList MakeTesselated( int latDiv,int longDiv )
 	{
 		namespace dx = DirectX;
 		assert( latDiv >= 3 );
@@ -18,7 +17,10 @@ public:
 		const float lattitudeAngle = PI / latDiv;
 		const float longitudeAngle = 2.0f * PI / longDiv;
 
-		std::vector<V> vertices;
+		Dvtx::VertexBuffer vertices{ 
+			Dvtx::VertexLayout{}
+			.Append( Dvtx::VertexLayout::ElementType::Position3D )
+		};
 		for( int iLat = 1; iLat < latDiv; iLat++ )
 		{
 			const auto latBase = dx::XMVector3Transform( 
@@ -27,22 +29,26 @@ public:
 			);
 			for( int iLong = 0; iLong < longDiv; iLong++ )
 			{
-				vertices.emplace_back();
-				auto v = dx::XMVector3Transform( 
+				auto v = dx::XMVector3Transform(
 					latBase,
 					dx::XMMatrixRotationZ( longitudeAngle * iLong )
 				);
-				dx::XMStoreFloat3( &vertices.back().pos,v );
+				vertices.EmplaceBack( 
+					*reinterpret_cast<dx::XMFLOAT3*>( &v )
+				);
 			}
 		}
 
 		// add the cap vertices
-		const auto iNorthPole = (unsigned short)vertices.size();
-		vertices.emplace_back();
-		dx::XMStoreFloat3( &vertices.back().pos,base );
-		const auto iSouthPole = (unsigned short)vertices.size();
-		vertices.emplace_back();
-		dx::XMStoreFloat3( &vertices.back().pos,dx::XMVectorNegate( base ) );
+		const auto iNorthPole = (unsigned short)vertices.Size();
+		vertices.EmplaceBack(
+			*reinterpret_cast<const dx::XMFLOAT3*>( &base )
+		);
+		const auto iSouthPole = (unsigned short)vertices.Size();
+		const auto negBase = dx::XMVectorNegate( base );
+		vertices.EmplaceBack(
+			*reinterpret_cast<const dx::XMFLOAT3*>( &negBase )
+		);
 		
 		const auto calcIdx = [latDiv,longDiv]( unsigned short iLat,unsigned short iLong )
 			{ return iLat * longDiv + iLong; };
@@ -91,9 +97,8 @@ public:
 
 		return { std::move( vertices ),std::move( indices ) };
 	}
-	template<class V>
-	static IndexedTriangleList<V> Make()
+	static IndexedTriangleList Make()
 	{
-		return MakeTesselated<V>( 12,24 );
+		return MakeTesselated( 12,24 );
 	}
 };
