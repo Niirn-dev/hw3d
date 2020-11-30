@@ -32,9 +32,8 @@ protected:
 		}
 		return nullptr;
 	}
-	void AddBind( std::unique_ptr<Bind::Bindable> bind ) noxnd;
-	void AddIndexBuffer( std::unique_ptr<Bind::IndexBuffer> ibuf ) noxnd;
+	void AddBind( std::shared_ptr<Bind::Bindable> bind ) noxnd;
 private:
 	const Bind::IndexBuffer* pIndexBuffer = nullptr;
-	std::vector<std::unique_ptr<Bind::Bindable>> binds;
+	std::vector<std::shared_ptr<Bind::Bindable>> binds;
 };
