@@ -2,6 +2,7 @@
 #include "Bindable.h"
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 
 namespace Bind
@@ -9,30 +10,28 @@ namespace Bind
 	class Codex
 	{
 	public:
-		static std::shared_ptr<Bindable> Resolve( const std::string& key ) noxnd
+		template<class T,typename...Params>
+		static std::shared_ptr<Bindable> Resolve( Graphics& gfx,Params&&... p ) noxnd
 		{
-			return Get_().Resolve_( key );
-		}
-		static void Store( std::shared_ptr<Bindable> bind ) noxnd
-		{
-			Get_().Store_( std::move( bind ) );
+			static_assert( std::is_base_of_v<Bindable,T>,"Class T should be derived from Bindable" );
+			return Get_().Resolve_<T>( gfx,std::forward<Params>( p )... );
 		}
 	private:
-		std::shared_ptr<Bindable> Resolve_( const std::string& key ) noxnd
+		template<class T,typename...Params>
+		std::shared_ptr<Bindable> Resolve_( Graphics& gfx,Params&&... p ) noxnd
 		{
-			auto bindIt = binds.find( key );
+			const auto key = T::GenerateUID( std::forward<Params>( p )... );
+			const auto bindIt = binds.find( key );
 			if ( bindIt != binds.end() )
 			{
 				return bindIt->second;
 			}
 			else
 			{
-				return {};
+				const auto bind = std::make_shared<T>( gfx,std::forward<Params>( p )... );
+				binds[key] = bind;
+				return bind;
 			}
-		}
-		void Store_( std::shared_ptr<Bindable> bind ) noxnd
-		{
-			binds[bind->GetUID()] = std::move( bind );
 		}
 
 		Codex() = default;
