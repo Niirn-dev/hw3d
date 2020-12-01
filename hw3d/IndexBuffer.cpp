@@ -3,7 +3,9 @@
 
 namespace Bind
 {
-	IndexBuffer::IndexBuffer( Graphics& gfx,const std::vector<unsigned short>& indices )
+	using namespace std::string_literals;
+
+	IndexBuffer::IndexBuffer( Graphics& gfx,const std::string& tag,const std::vector<unsigned short>& indices )
 		:
 		count( (UINT)indices.size() )
 	{
@@ -20,6 +22,10 @@ namespace Bind
 		isd.pSysMem = indices.data();
 		GFX_THROW_INFO( GetDevice( gfx )->CreateBuffer( &ibd,&isd,&pIndexBuffer ) );
 	}
+	IndexBuffer::IndexBuffer( Graphics& gfx,const std::vector<unsigned short>& indices )
+		:
+		IndexBuffer( gfx,"?",indices )
+	{}
 
 	void IndexBuffer::Bind( Graphics& gfx ) noexcept
 	{
@@ -29,5 +35,18 @@ namespace Bind
 	UINT IndexBuffer::GetCount() const noexcept
 	{
 		return count;
+	}
+
+	std::shared_ptr<Bindable> IndexBuffer::Resolve( Graphics& gfx,const std::string& tag,const std::vector<unsigned short>& indices ) noxnd
+	{
+		return Codex::Resolve<IndexBuffer>( gfx,tag,indices );
+	}
+	std::string IndexBuffer::GenerateUID( const std::string& tag,const std::optional<std::vector<unsigned short>>& indices ) noexcept
+	{
+		return typeid( IndexBuffer ).name() + "#"s + tag;
+	}
+	std::string IndexBuffer::GetUID() const noexcept
+	{
+		return GenerateUID( tag,{} );
 	}
 }

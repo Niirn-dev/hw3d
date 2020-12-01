@@ -5,12 +5,16 @@
 namespace Bind
 {
 	namespace wrl = Microsoft::WRL;
+	using namespace std::string_literals;
 
-	Texture::Texture( Graphics& gfx,const Surface& s,UINT slot/*= 0*/ )
+	Texture::Texture( Graphics& gfx,const std::string& path,UINT slot/*= 0*/ )
 		:
-		slot( slot )
+		slot( slot ),
+		path( path )
 	{
 		INFOMAN( gfx );
+
+		const auto s = Surface::FromFile( path );
 
 		// create texture resource
 		D3D11_TEXTURE2D_DESC textureDesc = {};
@@ -47,5 +51,18 @@ namespace Bind
 	void Texture::Bind( Graphics& gfx ) noexcept
 	{
 		GetContext( gfx )->PSSetShaderResources( slot,1u,pTextureView.GetAddressOf() );
+	}
+
+	std::shared_ptr<Bindable> Texture::Resolve( Graphics& gfx,const std::string& path,UINT slot ) noxnd
+	{
+		return Codex::Resolve<Texture>( gfx,path,slot );
+	}
+	std::string Texture::GenerateUID( const std::string& path,UINT slot ) noexcept
+	{
+		return typeid( Texture ).name() + "#"s + path + "#"s + std::to_string( slot );
+	}
+	std::string Texture::GetUID() const noexcept
+	{
+		return GenerateUID( path,slot );
 	}
 }

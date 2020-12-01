@@ -1,6 +1,5 @@
 #include "VertexShader.h"
 #include "GraphicsThrowMacros.h"
-#include "BindableCodex.h"
 
 namespace Bind
 {

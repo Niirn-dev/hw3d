@@ -1,4 +1,5 @@
 #include "Vertex.h"
+#include <sstream>
 
 namespace Dvtx
 {
@@ -29,6 +30,17 @@ namespace Dvtx
 			desc.push_back( e.GetDesc() );
 		}
 		return desc;
+	}
+	std::string VertexLayout::GetCode() const noexcept
+	{
+		using namespace std::string_literals;
+		std::stringstream code;
+		std::string delimiter = ""s;
+		for ( const auto& e : elements )
+		{
+			code << std::exchange( delimiter,"#"s ) << e.GetCode();
+		}
+		return code.str();
 	}
 
 
@@ -97,6 +109,30 @@ namespace Dvtx
 		}
 		assert( "Invalid element type" && false );
 		return { "INVALID",0,DXGI_FORMAT_UNKNOWN,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 };
+	}
+	std::string VertexLayout::Element::GetCode() const noexcept
+	{
+		switch ( type )
+		{
+		case Dvtx::VertexLayout::Position2D:
+			return Map<VertexLayout::Position2D>::code;
+		case Dvtx::VertexLayout::Position3D:
+			return Map<VertexLayout::Position3D>::code;
+		case Dvtx::VertexLayout::Texture2D:
+			return Map<VertexLayout::Texture2D>::code;
+		case Dvtx::VertexLayout::Normal:
+			return Map<VertexLayout::Normal>::code;
+		case Dvtx::VertexLayout::Float3Color:
+			return Map<VertexLayout::Float3Color>::code;
+		case Dvtx::VertexLayout::Float4Color:
+			return Map<VertexLayout::Float4Color>::code;
+		case Dvtx::VertexLayout::BGRAColor:
+			return Map<VertexLayout::BGRAColor>::code;
+		case Dvtx::VertexLayout::Count:
+		default:
+			assert( "Invalid element type" && false );
+			return "INVALID";
+		}
 	}
 
 

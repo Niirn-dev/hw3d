@@ -1,6 +1,7 @@
 #pragma once
 #include "Graphics.h"
 #include "ConditionalNoexcept.h"
+#include "BindableCodex.h"
 #include <string>
 
 namespace Bind

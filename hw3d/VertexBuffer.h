@@ -2,6 +2,7 @@
 #include "Bindable.h"
 #include "GraphicsThrowMacros.h"
 #include "Vertex.h"
+#include <optional>
 
 namespace Bind
 {
@@ -26,9 +27,15 @@ namespace Bind
 			sd.pSysMem = vertices.data();
 			GFX_THROW_INFO( GetDevice( gfx )->CreateBuffer( &bd,&sd,&pVertexBuffer ) );
 		}
+		VertexBuffer( Graphics& gfx,const std::string& tag,const Dvtx::VertexBuffer& vbuf );
 		VertexBuffer( Graphics& gfx,const Dvtx::VertexBuffer& vbuf );
 		void Bind( Graphics& gfx ) noexcept override;
+
+		static std::shared_ptr<Bindable> Resolve( Graphics& gfx,const std::string& tag,const Dvtx::VertexBuffer& vbuf ) noxnd;
+		static std::string GenerateUID( const std::string& tag,const std::optional<Dvtx::VertexBuffer>& vbuf ) noexcept;
+		std::string GetUID() const noexcept override;
 	protected:
+		std::string tag;
 		UINT stride;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
 	};

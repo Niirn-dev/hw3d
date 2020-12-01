@@ -265,12 +265,12 @@ std::unique_ptr<Mesh> Model::ParseMesh( Graphics& gfx,const aiMesh& mesh,const a
 		auto& material = *pMaterial[mesh.mMaterialIndex];
 		aiString texFile;
 		material.GetTexture( aiTextureType_DIFFUSE,0u,&texFile );
-		bindablePtrs.push_back( std::make_shared<Bind::Texture>( gfx,Surface::FromFile( "Models\\nano_textured\\"s + texFile.C_Str() ) ) );
+		bindablePtrs.push_back( std::make_shared<Bind::Texture>( gfx,"Models\\nano_textured\\"s + texFile.C_Str() ) );
 		bindablePtrs.push_back( std::make_shared<Bind::Sampler>( gfx ) );
 
 		if ( material.GetTexture( aiTextureType_SPECULAR,0u,&texFile ) == aiReturn_SUCCESS )
 		{
-			bindablePtrs.push_back( std::make_shared<Bind::Texture>( gfx,Surface::FromFile( "Models\\nano_textured\\"s + texFile.C_Str() ),1u ) );
+			bindablePtrs.push_back( std::make_shared<Bind::Texture>( gfx,"Models\\nano_textured\\"s + texFile.C_Str(),1u ) );
 			hasSpec = true;
 		}
 		else
@@ -287,15 +287,15 @@ std::unique_ptr<Mesh> Model::ParseMesh( Graphics& gfx,const aiMesh& mesh,const a
 	auto pvsbc = pvs->GetBytecode();
 	bindablePtrs.push_back( std::move( pvs ) );
 
-	bindablePtrs.push_back( std::make_shared<Bind::InputLayout>( gfx,vbuf.GetLayout().GetD3DLayout(),pvsbc ) );
+	bindablePtrs.push_back( std::make_shared<Bind::InputLayout>( gfx,vbuf.GetLayout(),pvsbc ) );
 
 	if ( hasSpec )
 	{
-		bindablePtrs.push_back( std::make_shared<Bind::PixelShader>( gfx,L"PhongPSSpec.cso" ) );
+		bindablePtrs.push_back( std::make_shared<Bind::PixelShader>( gfx,"PhongPSSpec.cso" ) );
 	}
 	else
 	{
-		bindablePtrs.push_back( std::make_shared<Bind::PixelShader>( gfx,L"PhongPS.cso" ) );
+		bindablePtrs.push_back( std::make_shared<Bind::PixelShader>( gfx,"PhongPS.cso" ) );
 
 		struct PSMaterialConstant
 		{
