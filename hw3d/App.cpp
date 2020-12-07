@@ -35,8 +35,8 @@ void App::DoFrame()
 	light.Bind( wnd.Gfx(),cam.GetMatrix() );
 		
 	nano.Draw( wnd.Gfx() );
-	plane.Draw( wnd.Gfx() );
 	light.Draw( wnd.Gfx() );
+	plane.Draw( wnd.Gfx() );
 
 	while( const auto e = wnd.kbd.ReadKey() )
 	{
