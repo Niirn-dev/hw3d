@@ -10,7 +10,7 @@ namespace Bind
 		void Bind( Graphics& gfx ) noexcept override;
 		ID3DBlob* GetBytecode() const noexcept;
 
-		static std::shared_ptr<Bindable> Resolve( Graphics& gfx,const std::string& path ) noxnd;
+		static std::shared_ptr<VertexShader> Resolve( Graphics& gfx,const std::string& path ) noxnd;
 		static std::string GenerateUID( const std::string& path ) noexcept;
 		std::string GetUID() const noexcept override;
 	protected:

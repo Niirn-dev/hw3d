@@ -14,7 +14,7 @@ namespace Bind
 		GetContext( gfx )->IASetPrimitiveTopology( type );
 	}
 
-	std::shared_ptr<Bindable> Topology::Resolve( Graphics& gfx,D3D11_PRIMITIVE_TOPOLOGY type ) noxnd
+	std::shared_ptr<Topology> Topology::Resolve( Graphics& gfx,D3D11_PRIMITIVE_TOPOLOGY type ) noxnd
 	{
 		return Codex::Resolve<Topology>( gfx,type );
 	}

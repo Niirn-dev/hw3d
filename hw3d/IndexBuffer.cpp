@@ -7,7 +7,8 @@ namespace Bind
 
 	IndexBuffer::IndexBuffer( Graphics& gfx,const std::string& tag,const std::vector<unsigned short>& indices )
 		:
-		count( (UINT)indices.size() )
+		count( (UINT)indices.size() ),
+		tag( tag )
 	{
 		INFOMAN( gfx );
 
@@ -37,7 +38,7 @@ namespace Bind
 		return count;
 	}
 
-	std::shared_ptr<Bindable> IndexBuffer::Resolve( Graphics& gfx,const std::string& tag,const std::vector<unsigned short>& indices ) noxnd
+	std::shared_ptr<IndexBuffer> IndexBuffer::Resolve( Graphics& gfx,const std::string& tag,const std::vector<unsigned short>& indices ) noxnd
 	{
 		return Codex::Resolve<IndexBuffer>( gfx,tag,indices );
 	}

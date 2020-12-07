@@ -31,7 +31,7 @@ namespace Bind
 		VertexBuffer( Graphics& gfx,const Dvtx::VertexBuffer& vbuf );
 		void Bind( Graphics& gfx ) noexcept override;
 
-		static std::shared_ptr<Bindable> Resolve( Graphics& gfx,const std::string& tag,const Dvtx::VertexBuffer& vbuf ) noxnd;
+		static std::shared_ptr<VertexBuffer> Resolve( Graphics& gfx,const std::string& tag,const Dvtx::VertexBuffer& vbuf ) noxnd;
 		static std::string GenerateUID( const std::string& tag,const std::optional<Dvtx::VertexBuffer>& vbuf ) noexcept;
 		std::string GetUID() const noexcept override;
 	protected:

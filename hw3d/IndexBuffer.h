@@ -12,7 +12,7 @@ namespace Bind
 		void Bind( Graphics& gfx ) noexcept override;
 		UINT GetCount() const noexcept;
 
-		static std::shared_ptr<Bindable> Resolve( Graphics& gfx,const std::string& tag,const std::vector<unsigned short>& indices ) noxnd;
+		static std::shared_ptr<IndexBuffer> Resolve( Graphics& gfx,const std::string& tag,const std::vector<unsigned short>& indices ) noxnd;
 		static std::string GenerateUID( const std::string& tag,const std::optional<std::vector<unsigned short>>& indices ) noexcept;
 		std::string GetUID() const noexcept override;
 	protected:
