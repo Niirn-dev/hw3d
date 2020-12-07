@@ -17,9 +17,8 @@ App::App()
 	wnd( 1280,720,"The Donkey Fart Box" ),
 	light( wnd.Gfx() )
 {
+	plane.SetPosition( { 1.0f,17.0f,-1.0f } );
 	wnd.Gfx().SetProjection( dx::XMMatrixPerspectiveLH( 1.0f,9.0f / 16.0f,0.5f,40.0f ) );
-
-	auto nano2 = Model{ wnd.Gfx(),"Models\\nano_textured\\nanosuit.obj" };
 }
 
 void App::DoFrame()
@@ -36,6 +35,7 @@ void App::DoFrame()
 	light.Bind( wnd.Gfx(),cam.GetMatrix() );
 		
 	nano.Draw( wnd.Gfx() );
+	plane.Draw( wnd.Gfx() );
 	light.Draw( wnd.Gfx() );
 
 	while( const auto e = wnd.kbd.ReadKey() )
