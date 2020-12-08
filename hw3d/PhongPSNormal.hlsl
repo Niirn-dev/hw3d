@@ -34,8 +34,8 @@ float4 main( float3 worldPos : Position,float3 n : Normal,float2 tc : Texcoord )
 		const float3 norm = normalMap.Sample( smplr,tc ).rgb;
 		// convert normal values
 		n.x = norm.x * 2.0f - 1.0f;
-		n.y = -norm.y * 2.0f - 1.0f;
-		n.z = -norm.z * 2.0f - 1.0f;
+		n.y = -norm.y * 2.0f + 1.0f;
+		n.z = -norm.z * 2.0f + 1.0f;
 		// transform normals to view space
 		n = mul( n,(float3x3)modelView );
 	}
