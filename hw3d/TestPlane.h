@@ -9,7 +9,7 @@ public:
 	void SetPosition( DirectX::XMFLOAT3 pos_in ) noexcept;
 	void SetRotation( float roll_in,float pitch_in,float yaw_in ) noexcept;
 	DirectX::XMMATRIX GetTransformXM() const noexcept override;
-	void SpawnControlWindow() noexcept;
+	void SpawnControlWindow( Graphics& gfx ) noexcept;
 private:
 	void ResetControls() noexcept;
 private:

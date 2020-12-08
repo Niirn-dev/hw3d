@@ -52,7 +52,7 @@ DirectX::XMMATRIX TestPlane::GetTransformXM() const noexcept
 		DirectX::XMMatrixTranslation( pos.x,pos.y,pos.z );
 }
 
-void TestPlane::SpawnControlWindow() noexcept
+void TestPlane::SpawnControlWindow( Graphics& gfx ) noexcept
 {
 	if ( ImGui::Begin( "Test plane" ) )
 	{
@@ -69,6 +69,18 @@ void TestPlane::SpawnControlWindow() noexcept
 		if ( ImGui::Button( "Reset" ) )
 		{
 			ResetControls();
+		}
+
+		ImGui::Text( "Shading" );
+		const auto changedIntensity = ImGui::SliderFloat( "Spec. Intensity",&pmc.specularIntensity,0.0f,10.0f,"%.2f" );
+		const auto changedPower = ImGui::SliderFloat( "Spec. Power",&pmc.specularPower,0.0f,160.0f,"%.1f" );
+		bool normMapEnabled = pmc.normalMapEnabled == TRUE;
+		const auto changedNormMode = ImGui::Checkbox( "Normal map enabled",&normMapEnabled );
+		
+		if ( changedIntensity || changedPower || changedNormMode )
+		{
+			pmc.normalMapEnabled = normMapEnabled ? TRUE : FALSE;
+			QueryBindable<Bind::PixelConstantBuffer<PSMaterialConstant>>()->Update( gfx,pmc );
 		}
 	}
 	ImGui::End();
