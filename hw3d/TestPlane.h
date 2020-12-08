@@ -13,6 +13,14 @@ public:
 private:
 	void ResetControls() noexcept;
 private:
+	struct PSMaterialConstant
+	{
+		float specularIntensity = 0.6f;
+		float specularPower = 30.0f;
+		BOOL normalMapEnabled = TRUE;
+		float padding;
+	} pmc;
+
 	DirectX::XMFLOAT3 pos = { 1.0f,1.0f,1.0f };
 	float roll = 0.0f;
 	float pitch = 0.0f;

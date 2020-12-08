@@ -19,17 +19,12 @@ TestPlane::TestPlane( Graphics& gfx,float size )
 	const auto pvsbc = pvs->GetBytecode();
 	AddBind( std::move( pvs ) );
 
-	AddBind( PixelShader::Resolve( gfx,"PhongPS.cso"s ) );
+	AddBind( PixelShader::Resolve( gfx,"PhongPSNormal.cso"s ) );
 
-	struct PSMaterialConstant
-	{
-		float specularIntensity = 0.6f;
-		float specularPower = 30.0f;
-		float padding[2];
-	} pmc;
-	AddBind( PixelConstantBuffer<PSMaterialConstant>::Resolve( gfx,pmc,1u ) );
+	AddBind( PixelConstantBuffer<TestPlane::PSMaterialConstant>::Resolve( gfx,pmc,1u ) );
 
 	AddBind( Texture::Resolve( gfx,"Images\\brickwall.jpg"s ) );
+	AddBind( Texture::Resolve( gfx,"Images\\brickwall_normal.jpg"s,1u ) );
 	AddBind( Sampler::Resolve( gfx ) );
 
 	AddBind( InputLayout::Resolve( gfx,model.vertices.GetLayout(),pvsbc ) );
