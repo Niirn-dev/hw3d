@@ -16,6 +16,12 @@ cbuffer ObjectCBuf
 	bool normalMapEnabled;
 };
 
+cbuffer CBuf
+{
+	matrix modelView;
+	matrix modelViewProj;
+};
+
 Texture2D tex;
 Texture2D normalMap;
 SamplerState smplr;
@@ -30,6 +36,8 @@ float4 main( float3 worldPos : Position,float3 n : Normal,float2 tc : Texcoord )
 		n.x = norm.x * 2.0f - 1.0f;
 		n.y = -norm.y * 2.0f - 1.0f;
 		n.z = -norm.z * 2.0f - 1.0f;
+		// transform normals to view space
+		n = mul( n,(float3x3)modelView );
 	}
 	// fragment to light vector data
 	const float3 vToL = lightPos - worldPos;
