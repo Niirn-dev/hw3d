@@ -70,6 +70,7 @@ void App::DoFrame()
 	light.SpawnControlWindow();
 	ShowImguiDemoWindow();
 	nano.ShowWindow();
+	plane.SpawnControlWindow();
 
 	// present
 	wnd.Gfx().EndFrame();

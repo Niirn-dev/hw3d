@@ -1,6 +1,7 @@
 #include "TestPlane.h"
 #include "BindableCommon.h"
 #include "Plane.h"
+#include "imgui\imgui.h"
 
 TestPlane::TestPlane( Graphics& gfx,float size )
 {
@@ -54,4 +55,34 @@ DirectX::XMMATRIX TestPlane::GetTransformXM() const noexcept
 {
 	return DirectX::XMMatrixRotationRollPitchYaw( pitch,yaw,roll ) * 
 		DirectX::XMMatrixTranslation( pos.x,pos.y,pos.z );
+}
+
+void TestPlane::SpawnControlWindow() noexcept
+{
+	if ( ImGui::Begin( "Test plane" ) )
+	{
+		ImGui::Text( "Orientation" );
+		ImGui::SliderAngle( "Roll",&roll,-180.0f,180.0f );
+		ImGui::SliderAngle( "Pitch",&pitch,-180.0f,180.0f );
+		ImGui::SliderAngle( "Yaw",&yaw,-180.0f,180.0f );
+
+		ImGui::Text( "Position" );
+		ImGui::SliderFloat( "X",&pos.x,-60.0f,60.0f,"%.1f" );
+		ImGui::SliderFloat( "Y",&pos.y,-60.0f,60.0f,"%.1f" );
+		ImGui::SliderFloat( "Z",&pos.z,-60.0f,60.0f,"%.1f" );
+
+		if ( ImGui::Button( "Reset" ) )
+		{
+			ResetControls();
+		}
+	}
+	ImGui::End();
+}
+
+void TestPlane::ResetControls() noexcept
+{
+	pos = { 1.0f,17.0f,-1.0f };
+	roll = 0.0f;
+	pitch = 0.0f;
+	yaw = 0.0f;
 }
