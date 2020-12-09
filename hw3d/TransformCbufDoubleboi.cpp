@@ -14,12 +14,13 @@ namespace Bind
 
 	void TransformCbufDoubleboi::Bind( Graphics& gfx ) noexcept
 	{
-		UpdateBindImpl( gfx,TransformCbuf::GetTransforms( gfx ) );
+		const auto tf = TransformCbuf::GetTransforms( gfx );
+		TransformCbuf::UpdateBindImpl( gfx,tf );
+		UpdateBindImpl( gfx,tf );
 	}
 
 	void TransformCbufDoubleboi::UpdateBindImpl( Graphics& gfx,Transforms transforms ) noexcept
 	{
-		TransformCbuf::UpdateBindImpl( gfx,transforms );
 		pPcbuf->Update( gfx,transforms );
 		pPcbuf->Bind( gfx );
 	}
