@@ -16,28 +16,27 @@ cbuffer ObjectCBuf
 	bool normalMapEnabled;
 };
 
-cbuffer CBuf
-{
-	matrix modelView;
-	matrix modelViewProj;
-};
-
 Texture2D tex;
-Texture2D normalMap;
+Texture2D normalMap : register( t2 );
 SamplerState smplr;
 
-float4 main( float3 worldPos : Position,float3 n : Normal,float2 tc : Texcoord ) : SV_Target
+float4 main( float3 worldPos : Position,float3 n : Normal,float3 tangent : Tangent,float3 bitangent : Bitangent,float2 tc : Texcoord ) : SV_Target
 {
 	if ( normalMapEnabled )
 	{
 		// read raw normal values from the map
-		const float3 norm = normalMap.Sample( smplr,tc ).rgb;
+		float3 norm = normalMap.Sample( smplr,tc ).rgb;
 		// convert normal values
-		n.x = norm.x * 2.0f - 1.0f;
-		n.y = -norm.y * 2.0f + 1.0f;
-		n.z = -norm.z * 2.0f + 1.0f;
+		norm.x = norm.x * 2.0f - 1.0f;
+		norm.y = norm.y * 2.0f - 1.0f;
+		norm.z = norm.z * 2.0f - 1.0f;
 		// transform normals to view space
-		n = mul( n,(float3x3)modelView );
+		const float3x3 tf = float3x3(
+			tangent,
+			bitangent,
+			n
+		);
+		n = mul( norm,tf );
 	}
 	// fragment to light vector data
 	const float3 vToL = lightPos - worldPos;

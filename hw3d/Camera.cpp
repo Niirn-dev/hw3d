@@ -49,7 +49,7 @@ void Camera::SpawnControlWindow() noexcept
 
 void Camera::Reset() noexcept
 {
-	dx::XMStoreFloat3( &pos,{ 0.0f,9.0f,-20.0f } );
+	dx::XMStoreFloat3( &pos,{ 0.0f,0.0f,-20.0f } );
 	pitch = 0.0f;
 	yaw = 0.0f;
 }

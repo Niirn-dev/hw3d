@@ -186,7 +186,8 @@ Model::Model( Graphics& gfx,const std::string fileName )
 		aiProcess_Triangulate |
 		aiProcess_JoinIdenticalVertices |
 		aiProcess_ConvertToLeftHanded |
-		aiProcess_GenNormals
+		aiProcess_GenNormals |
+		aiProcess_CalcTangentSpace
 	);
 
 	if( pScene == nullptr )
@@ -232,15 +233,19 @@ std::unique_ptr<Mesh> Model::ParseMesh( Graphics& gfx,const aiMesh& mesh,const a
 		VertexLayout{}
 		.Append( VertexLayout::Position3D )
 		.Append( VertexLayout::Normal )
+		.Append( VertexLayout::Tangent )
+		.Append( VertexLayout::Bitangent )
 		.Append( VertexLayout::Texture2D )
 	) );
 
 	for( unsigned int i = 0; i < mesh.mNumVertices; i++ )
 	{
 		vbuf.EmplaceBack(
-			*reinterpret_cast<dx::XMFLOAT3*>(&mesh.mVertices[i]),
-			*reinterpret_cast<dx::XMFLOAT3*>(&mesh.mNormals[i]),
-			*reinterpret_cast<dx::XMFLOAT2*>(&mesh.mTextureCoords[0][i])
+			*reinterpret_cast<dx::XMFLOAT3*>( &mesh.mVertices[i] ),
+			*reinterpret_cast<dx::XMFLOAT3*>( &mesh.mNormals[i] ),
+			*reinterpret_cast<dx::XMFLOAT3*>( &mesh.mTangents[i] ),
+			*reinterpret_cast<dx::XMFLOAT3*>( &mesh.mBitangents[i] ),
+			*reinterpret_cast<dx::XMFLOAT2*>( &mesh.mTextureCoords[0][i] )
 		);
 	}
 
@@ -257,6 +262,8 @@ std::unique_ptr<Mesh> Model::ParseMesh( Graphics& gfx,const aiMesh& mesh,const a
 
 	std::vector<std::shared_ptr<Bind::Bindable>> bindablePtrs;
 
+	using namespace std::string_literals;
+	const auto root = "Models\\brick_wall\\"s;
 	bool hasSpec = false;
 	float shininess = 35.0f;
 	if ( mesh.mMaterialIndex >= 0 )
@@ -265,24 +272,33 @@ std::unique_ptr<Mesh> Model::ParseMesh( Graphics& gfx,const aiMesh& mesh,const a
 		auto& material = *pMaterial[mesh.mMaterialIndex];
 		aiString texFile;
 		material.GetTexture( aiTextureType_DIFFUSE,0u,&texFile );
-		bindablePtrs.push_back( Bind::Texture::Resolve( gfx,"Models\\nano_textured\\"s + texFile.C_Str() ) );
+		bindablePtrs.push_back( Bind::Texture::Resolve( gfx,root + texFile.C_Str() ) );
 		bindablePtrs.push_back( Bind::Sampler::Resolve( gfx ) );
 
 		if ( material.GetTexture( aiTextureType_SPECULAR,0u,&texFile ) == aiReturn_SUCCESS )
 		{
-			bindablePtrs.push_back( Bind::Texture::Resolve( gfx,"Models\\nano_textured\\"s + texFile.C_Str(),1u ) );
+			bindablePtrs.push_back( Bind::Texture::Resolve( gfx,root + texFile.C_Str(),1u ) );
 			hasSpec = true;
 		}
 		else
 		{
 			material.Get( AI_MATKEY_SHININESS,shininess );
 		}
+
+		if ( material.GetTexture( aiTextureType_NORMALS,0u,&texFile ) == aiReturn_SUCCESS )
+		{
+			bindablePtrs.push_back( Bind::Texture::Resolve( gfx,root + texFile.C_Str(),2u ) );
+		}
+		else
+		{
+			assert( "Should've found normal map" && false );
+		}
 	}
 	bindablePtrs.push_back( Bind::VertexBuffer::Resolve( gfx,mesh.mName.C_Str(),vbuf ) );
 
 	bindablePtrs.push_back( Bind::IndexBuffer::Resolve( gfx,mesh.mName.C_Str(),indices ) );
 
-	auto pvs = Bind::VertexShader::Resolve( gfx,"PhongVS.cso" );
+	auto pvs = Bind::VertexShader::Resolve( gfx,"PhongVSNormal.cso" );
 	auto pvsbc = pvs->GetBytecode();
 	bindablePtrs.push_back( std::move( pvs ) );
 
@@ -294,7 +310,7 @@ std::unique_ptr<Mesh> Model::ParseMesh( Graphics& gfx,const aiMesh& mesh,const a
 	}
 	else
 	{
-		bindablePtrs.push_back( Bind::PixelShader::Resolve( gfx,"PhongPS.cso" ) );
+		bindablePtrs.push_back( Bind::PixelShader::Resolve( gfx,"PhongPSNormal.cso" ) );
 
 		struct PSMaterialConstant
 		{

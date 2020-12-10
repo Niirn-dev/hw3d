@@ -6,7 +6,6 @@
 #include "PointLight.h"
 #include "Mesh.h"
 #include <set>
-#include "TestPlane.h"
 
 class App
 {
@@ -27,6 +26,6 @@ private:
 	float speed_factor = 1.0f;
 	Camera cam;
 	PointLight light;
-	Model nano{ wnd.Gfx(),"Models\\nano_textured\\nanosuit.obj" };
-	TestPlane plane{ wnd.Gfx(),5.0f };
+	// Model nano{ wnd.Gfx(),"Models\\nano_textured\\nanosuit.obj" };
+	Model wall{ wnd.Gfx(),"Models\\brick_wall\\brick_wall.obj" };
 };

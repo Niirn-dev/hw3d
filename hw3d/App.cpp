@@ -17,7 +17,6 @@ App::App()
 	wnd( 1280,720,"The Donkey Fart Box" ),
 	light( wnd.Gfx() )
 {
-	plane.SetPosition( { 1.0f,17.0f,-1.0f } );
 	wnd.Gfx().SetProjection( dx::XMMatrixPerspectiveLH( 1.0f,9.0f / 16.0f,0.5f,40.0f ) );
 }
 
@@ -34,9 +33,9 @@ void App::DoFrame()
 	wnd.Gfx().SetCamera( cam.GetMatrix() );
 	light.Bind( wnd.Gfx(),cam.GetMatrix() );
 		
-	nano.Draw( wnd.Gfx() );
+	// nano.Draw( wnd.Gfx() );
 	light.Draw( wnd.Gfx() );
-	plane.Draw( wnd.Gfx() );
+	wall.Draw( wnd.Gfx() );
 
 	while( const auto e = wnd.kbd.ReadKey() )
 	{
@@ -69,8 +68,8 @@ void App::DoFrame()
 	cam.SpawnControlWindow();
 	light.SpawnControlWindow();
 	ShowImguiDemoWindow();
-	nano.ShowWindow();
-	plane.SpawnControlWindow( wnd.Gfx() );
+	// nano.ShowWindow();
+	wall.ShowWindow();
 
 	// present
 	wnd.Gfx().EndFrame();
