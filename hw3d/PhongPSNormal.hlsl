@@ -32,9 +32,9 @@ float4 main( float3 worldPos : Position,float3 n : Normal,float3 tangent : Tange
 		norm.z = norm.z * 2.0f - 1.0f;
 		// transform normals to view space
 		const float3x3 tf = float3x3(
-			tangent,
-			bitangent,
-			n
+			normalize( tangent ),
+			normalize( bitangent ),
+			normalize( n )
 		);
 		n = mul( norm,tf );
 	}
