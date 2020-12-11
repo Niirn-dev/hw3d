@@ -19,8 +19,8 @@ VSOut main( float3 pos : Position,float3 n : Normal,float3 tangent : Tangent,flo
 	VSOut vso;
 	vso.viewPos = ( float3 )mul( float4( pos,1.0f ),modelView );
 	vso.normal = mul( n,( float3x3 )modelView );
-	vso.tangent = tangent;
-	vso.bitangent = bitangent;
+	vso.tangent = mul( tangent,(float3x3)modelView );
+	vso.bitangent = mul( bitangent,( float3x3 )modelView );
 	vso.tc = tc;
 	vso.pos = mul( float4( pos,1.0f ),modelViewProj );
 	return vso;
